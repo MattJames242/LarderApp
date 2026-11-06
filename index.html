@@ -272,6 +272,7 @@ td.r,th.r{text-align:right}
 .price-in:focus-within{border-color:var(--brand)}
 .price-in.edited{border-color:var(--accent);background:var(--accent-soft)}
 .unit{font-family:var(--f-mono);font-size:12.5px;color:var(--muted);white-space:nowrap}
+.pk-sm{display:none}
 .inuse{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--good);background:var(--good-soft);padding:2px 7px;border-radius:999px;margin-left:6px;white-space:nowrap}
 
 /* Notice */
@@ -542,6 +543,14 @@ button.cd:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}
   th,td{padding-left:12px;padding-right:12px}
   .hide-sm{display:none}
   .tabbar .tabs{display:none}
+  .prices .col-pk,.prices .col-unit{display:none}
+  .prices .pk-sm{display:block;margin-top:2px}
+  .prices .price-in{padding:0 6px}
+  .prices .price-in input{width:46px}
+  .prices td:last-child,.prices th.r{padding-right:12px}
+  .prices td:first-child{padding-right:6px}
+  .prices td:first-child{line-height:1.35}
+  .prices tr.group td{padding-top:10px}
   #planChrome{gap:14px}
   .tabbar:has(.tab-actions:empty){display:none}
   main{padding-bottom:calc(92px + env(safe-area-inset-bottom,0px))}
@@ -1419,9 +1428,9 @@ function renderPrices(){
     rows += `<tr class="group"><td colspan="4">${label}</td></tr>` + ids.map(id => {
       const g = ING[id], p = price(id), ed = S.prices[id] != null;
       const unit = g.u === "each" ? `${pence(p / g.size)} each` : `${money(p / g.size * (g.size >= 1000 || g.u === "ml" ? 1000 : 100))} / ${g.u === "ml" ? "litre" : g.size >= 1000 ? "kg" : "100 g"}`;
-      return `<tr><td><span>${esc(g.n)}</span>${e.need[id] ? '<span class="inuse">This week</span>' : ""}</td><td class="unit">${esc(g.pk)}</td>
+      return `<tr><td><span>${esc(g.n)}</span>${e.need[id] ? '<span class="inuse">This week</span>' : ""}<span class="pk-sm unit">${esc(g.pk)} · ${unit}</span></td><td class="unit col-pk">${esc(g.pk)}</td>
         <td class="r"><label class="price-in${ed ? " edited" : ""}"><span>£</span><input type="number" inputmode="decimal" step="0.01" min="0" value="${p.toFixed(2)}" data-action="price" data-id="${id}" aria-label="Price of ${esc(g.n)}, ${esc(g.pk)}"></label></td>
-        <td class="r unit">${unit}${ed ? ` <button class="mini" data-action="resetprice" data-id="${id}" title="Back to ${money(g.p)}">Reset</button>` : ""}</td></tr>`;
+        <td class="r unit col-unit">${unit}${ed ? ` <button class="mini" data-action="resetprice" data-id="${id}" title="Back to ${money(g.p)}">Reset</button>` : ""}</td></tr>`;
     }).join("");
   }
   view.prices.innerHTML = `<div class="prices">
@@ -1429,7 +1438,7 @@ function renderPrices(){
       <label class="search">${ICON.search}<input id="priceSearch" type="search" placeholder="Find an item" value="${esc(priceFilter)}" aria-label="Find an item"></label>
       <span class="hint">${edited ? `${edited} price${edited === 1 ? "" : "s"} edited by you` : "Estimated prices. Edit any that differ in your store."}</span>
     </div>
-    <div class="table-wrap"><table><thead><tr><th>Item</th><th>Pack</th><th class="r">Price</th><th class="r">Unit price</th></tr></thead><tbody>${rows || `<tr><td colspan="4" class="hint" style="padding:24px 16px">No items match “${esc(priceFilter)}”.</td></tr>`}</tbody></table></div>
+    <div class="table-wrap"><table><thead><tr><th>Item</th><th class="col-pk">Pack</th><th class="r">Price</th><th class="r col-unit">Unit price</th></tr></thead><tbody>${rows || `<tr><td colspan="4" class="hint" style="padding:24px 16px">No items match “${esc(priceFilter)}”.</td></tr>`}</tbody></table></div>
   </div>`;
 }
 
@@ -1449,7 +1458,8 @@ function render(){
   if (TAB === "home") renderHome();
   if (TAB === "calendar") renderCalendar();
   renderTabActions();
-  $("#planChrome").hidden = TAB === "home" || TAB === "calendar";
+  // Settings and the budget summary belong to planning; the Used and Prices views don't repeat them.
+  $("#planChrome").hidden = !["week","shop"].includes(TAB);
   renderBottomNav();
   for (const t of TABS) {
     view[t].hidden = t !== TAB;
