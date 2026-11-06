@@ -28,3 +28,6 @@ jobs:
           path: .
       - id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          # GitHub Pages can be slow to confirm a deploy; allow 20 minutes instead of the default 10.
+          timeout: 1200000
