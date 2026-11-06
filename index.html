@@ -643,6 +643,27 @@ const ING = {
   mayo:{n:"Light mayonnaise",a:"cupboard",size:500,u:"ml",p:.99,pk:"500 ml jar",s:"light mayonnaise",w:0},
   soy:{n:"Soy sauce",a:"cupboard",size:150,u:"ml",p:.69,pk:"150 ml bottle",s:"soy sauce",w:0},
   stock:{n:"Stock cubes",a:"cupboard",size:10,u:"each",un:"stock cube",p:.35,pk:"10 pack",s:"",w:0},
+  cauliflower:{n:"Cauliflower",a:"veg",size:1,u:"each",un:"",p:.89,pk:"each",s:"cauliflower",w:.6,fv:600},
+  leek:{n:"Leeks",a:"veg",size:2,u:"each",un:"",p:.95,pk:"2 pack",s:"leek",w:.5,fv:200},
+  pakchoi:{n:"Pak choi",a:"veg",size:2,u:"each",un:"",p:.99,pk:"2 pack",s:"pak choi",w:1,fv:150},
+  redcabbage:{n:"Red cabbage",a:"veg",size:1,u:"each",un:"",p:.69,pk:"each",s:"red cabbage",w:.4,fv:800},
+  beetroot:{n:"Cooked beetroot",a:"veg",size:250,u:"g",p:.59,pk:"250 g",s:"cooked beetroot",w:.8,fv:1},
+  lime:{n:"Limes",a:"veg",size:3,u:"each",un:"",p:.69,pk:"3 pack",s:"lime",w:.4},
+  naan:{n:"Plain naan breads",a:"bakery",size:2,u:"each",un:"naan",p:.79,pk:"2 pack",s:"",w:.4},
+  rolls:{n:"Wholemeal rolls",a:"bakery",size:6,u:"each",un:"roll",p:.75,pk:"6 pack",s:"",w:.5},
+  bagels:{n:"Plain bagels",a:"bakery",size:5,u:"each",un:"bagel",p:.89,pk:"5 pack",s:"",w:.4},
+  paneer:{n:"Paneer",a:"dairy",size:226,u:"g",p:1.99,pk:"226 g",s:"paneer",w:.5},
+  cremefraiche:{n:"Half-fat crème fraîche",a:"dairy",size:300,u:"g",p:.85,pk:"300 ml tub",s:"crème fraîche",w:1},
+  softcheese:{n:"Light soft cheese",a:"dairy",size:200,u:"g",p:.85,pk:"200 g tub",s:"soft cheese",w:.8},
+  puff:{n:"Ready-rolled puff pastry",a:"dairy",size:320,u:"g",p:1.15,pk:"320 g sheet",s:"puff pastry",w:.6},
+  turkeymince:{n:"Turkey breast mince",a:"meat",size:500,u:"g",p:3.29,pk:"500 g",s:"turkey mince",w:.6},
+  beefstrips:{n:"Beef stir-fry strips",a:"meat",size:300,u:"g",p:3.29,pk:"300 g",s:"beef strips",w:.6},
+  lambsteak:{n:"Lamb leg steaks",a:"meat",size:280,u:"g",p:4.49,pk:"2 steaks, 280 g",s:"lamb leg steak",w:.6},
+  duck:{n:"Duck legs",a:"meat",size:2,u:"each",un:"duck leg",p:4.99,pk:"2 pack",s:"",w:.6},
+  seabass:{n:"Sea bass fillets",a:"fish",size:180,u:"g",p:3.99,pk:"2 fillets, 180 g",s:"sea bass fillet",w:.7},
+  smokedsalmon:{n:"Smoked salmon",a:"fish",size:100,u:"g",p:1.99,pk:"100 g",s:"smoked salmon",w:.8},
+  risotto:{n:"Arborio risotto rice",a:"cupboard",size:500,u:"g",p:.99,pk:"500 g",s:"risotto rice",w:0},
+  ricenoodles:{n:"Rice noodles",a:"cupboard",size:250,u:"g",p:.99,pk:"250 g",s:"rice noodles",w:0},
   oil:{n:"Olive oil",a:"staple",size:500,u:"ml",p:3.49,pk:"500 ml",s:"olive oil",st:1,w:0},
   spices:{n:"Spices: chilli, cumin, paprika, garam masala",a:"staple",size:80,u:"each",un:"tsp",p:2.20,pk:"4 small jars",s:"mixed spices",st:1,w:0},
   herbs:{n:"Dried mixed herbs",a:"staple",size:30,u:"each",un:"tsp",p:.55,pk:"small jar",s:"dried mixed herbs",st:1,w:0},
@@ -761,19 +782,82 @@ const RECIPES = [
  {id:"omelette",t:"b",tr:2,name:"Spinach & feta omelette",m:"veg",time:10,r:4.0,ing:[["eggs",2],["spinach",30],["feta",20],["tomcherry",40],["bread",1],["oil",5]],steps:["Wilt the spinach in the oil, then pour in the beaten eggs.","Cook until almost set, scatter over the feta and halved tomatoes, fold and serve with toast."]},
  {id:"pancakes",t:"b",tr:2,name:"Banana oat pancakes with berries",m:"veg",time:15,r:4.1,ing:[["oats",40],["banana",1],["eggs",1],["milk",40],["greekyog",50],["berries",50],["oil",5]],steps:["Blend the oats, banana, egg and milk into a batter.","Fry spoonfuls in a lightly oiled pan for 2 minutes each side.","Serve with yoghurt and warm berries."]},
  {id:"avotoast",t:"b",tr:3,name:"Avocado & poached egg on toast",m:"veg",time:10,r:4.3,ing:[["avocado",.5],["eggs",1],["bread",2],["chilli",3],["lemon",.1]],steps:["Poach the egg in barely simmering water for 3 minutes.","Mash the avocado with lemon juice, salt and chopped chilli and spread on toast.","Top with the egg."]}
+ // ---------- more dinners: everyday
+ ,{id:"caulicurry",t:"d",tr:1,name:"Cauliflower & chickpea curry",m:"veg",time:35,r:4.1,ing:[["cauliflower",.3],["chickpeas",.5],["currypaste",25],["choptom",.5],["onion",50],["spinach",30],["basmati",70],["greekyog",20]],
+  steps:["Fry the onion in a little oil for 5 minutes, then stir in the curry paste for a minute.","Add small cauliflower florets, the chopped tomatoes, drained chickpeas and 100 ml water per portion. Cover and simmer for 15 minutes until the cauliflower is tender.","Stir in the spinach to wilt.","Serve with rice and a spoonful of yoghurt."]}
+ ,{id:"mushrisotto",t:"d",tr:1,name:"Mushroom & spinach risotto",m:"veg",time:35,r:4.2,ing:[["risotto",80],["mushroom",100],["spinach",40],["onion",50],["stock",.5],["grana",15],["garlic",1],["butter",8]],
+  steps:["Soften the onion and garlic in the butter, then add the sliced mushrooms and cook until golden.","Stir in the rice for a minute, then add the hot stock a ladle at a time, stirring, for 18–20 minutes until creamy.","Stir through the spinach and grated Grana Padano and season."]}
+ ,{id:"leekpasta",t:"d",tr:1,name:"Leek, pea & bacon pasta",m:"pork",time:20,r:4.2,ing:[["wwpasta",90],["leek",.5],["peas",60],["bacon",40],["cremefraiche",40],["grana",10]],
+  steps:["Cook the pasta, adding the peas for the last 2 minutes.","Fry the chopped bacon until crisp, then add the sliced leek and cook gently for 8 minutes until soft.","Stir in the crème fraîche and a splash of pasta water, then toss with the drained pasta and peas. Top with grated cheese."]}
+ ,{id:"frittata",t:"d",tr:1,name:"Potato, pepper & feta frittata with salad",m:"veg",time:30,r:4.0,ing:[["eggs",2.5],["babypot",120],["pepper",.3],["spinach",30],["feta",20],["salad",30],["oil",8]],
+  steps:["Boil the sliced potatoes for 8 minutes and drain.","Fry the pepper in an ovenproof pan, add the potatoes and spinach, then pour over the beaten eggs.","Crumble over the feta and cook gently for 6 minutes, then finish under the grill until set.","Serve in wedges with salad."]}
+ // ---------- more dinners: step-up
+ ,{id:"meatballs",t:"d",tr:2,name:"Turkey meatballs in tomato sauce with spaghetti",m:"turkey",time:35,r:4.5,ing:[["turkeymince",110],["spaghetti",90],["choptom",.5],["onion",50],["garlic",1],["basil",.2],["grana",10],["herbs",.5]],
+  steps:["Mix the turkey mince with a little grated onion, the herbs, salt and pepper and roll into small balls.","Brown the meatballs in a little oil, then set aside.","Soften the rest of the onion with the garlic, add the chopped tomatoes and simmer for 10 minutes. Return the meatballs and cook for 10 minutes more.","Serve on spaghetti with basil and grated cheese."]}
+ ,{id:"beefbroc",t:"d",tr:2,name:"Ginger beef & broccoli with rice",m:"beef",time:25,r:4.6,ing:[["beefstrips",110],["broccoli",.35],["basmati",70],["soy",20],["ginger",5],["garlic",1],["springonion",1],["honey",5],["oil",8]],
+  steps:["Cook the rice.","Stir-fry the beef strips in very hot oil for 2 minutes, then set aside.","Stir-fry the broccoli florets with ginger and garlic for 3 minutes with a splash of water.","Return the beef with the soy and honey, toss until glossy and serve with rice and spring onions."]}
+ ,{id:"satay",t:"d",tr:2,name:"Chicken satay rice noodles",m:"chicken",time:25,r:4.6,ing:[["chickbreast",110],["ricenoodles",65],["pb",20],["soy",15],["lime",.3],["pepper",.5],["carrot",50],["springonion",1],["coriander",.15]],
+  steps:["Soak or cook the rice noodles as the packet says.","Whisk the peanut butter, soy, lime juice and 3 tbsp hot water into a sauce.","Stir-fry the sliced chicken until cooked, then add the pepper and carrot ribbons for 2 minutes.","Toss in the noodles and sauce and finish with spring onions and coriander."]}
+ ,{id:"gingerpork",t:"d",tr:2,name:"Ginger pork with pak choi & rice",m:"pork",time:25,r:4.4,ing:[["porkloin",120],["pakchoi",.5],["basmati",70],["ginger",5],["soy",15],["honey",5],["garlic",1],["springonion",1]],
+  steps:["Cook the rice.","Slice the pork thinly and stir-fry for 4 minutes in a little oil until cooked through.","Add the ginger, garlic and halved pak choi and cook for 2 minutes.","Add the soy and honey, toss and serve with rice and spring onions."]}
+ ,{id:"chorizorice",t:"d",tr:2,name:"Chicken & chorizo one-pot rice",m:"chicken",time:40,r:4.6,ing:[["chickbreast",100],["chorizo",20],["basmati",75],["pepper",.5],["onion",50],["peas",50],["stock",.5],["spices",1],["lemon",.15]],
+  steps:["Fry the chorizo until it releases its oil, then brown the diced chicken in it.","Add the onion and pepper for 5 minutes, then the paprika and rice.","Pour in the stock (250 ml per portion), cover and simmer for 25 minutes until the rice is tender, adding the peas for the last 5.","Squeeze over lemon to serve."]}
+ ,{id:"turkeyburger",t:"d",tr:2,name:"Turkey burgers with sweet potato wedges & slaw",m:"turkey",time:40,r:4.6,ing:[["turkeymince",120],["rolls",1],["sweetpot",250],["redcabbage",.12],["carrot",40],["greekyog",25],["salad",15],["spices",.5],["oil",8]],
+  steps:["Roast sweet potato wedges with the oil and paprika at 200°C (180°C fan) for 30 minutes.","Season the turkey mince and shape into burgers. Grill or fry for 5–6 minutes each side until cooked through.","Shred the cabbage and grate the carrot, then mix with the yoghurt for a quick slaw.","Serve the burgers in rolls with salad, slaw and wedges."]}
+ ,{id:"harissacauli",t:"d",tr:2,name:"Harissa roast cauliflower with chickpeas",m:"veg",time:40,r:4.3,ing:[["cauliflower",.4],["chickpeas",.5],["harissa",12],["greekyog",40],["couscous",60],["coriander",.15],["lemon",.2],["oil",10]],
+  steps:["Toss cauliflower florets and drained chickpeas with the harissa and oil.","Roast at 200°C (180°C fan) for 30 minutes until charred.","Make the couscous with boiling water and lemon juice.","Serve with yoghurt and coriander."]}
+ ,{id:"gnocchibake",t:"d",tr:2,name:"Sausage, kale & gnocchi bake",m:"pork",time:35,r:4.5,ing:[["gnocchi",180],["sausage",1.5],["choptom",.5],["kale",30],["mozzarella",40],["garlic",1],["herbs",.5]],
+  steps:["Squeeze the sausage meat out of the skins and fry in small pieces until browned.","Add garlic, the chopped tomatoes and herbs and simmer for 5 minutes. Stir in the kale and gnocchi.","Tip into a dish, tear over the mozzarella and bake at 200°C (180°C fan) for 15 minutes."]}
+ ,{id:"tart",t:"d",tr:2,name:"Tomato, feta & pesto puff tart with salad",m:"veg",time:30,r:4.4,ing:[["puff",80],["tomcherry",100],["feta",35],["pesto",20],["salad",40]],
+  steps:["Heat the oven to 200°C (180°C fan). Score a border around the pastry and prick the middle.","Spread the pesto inside the border, top with halved tomatoes and crumbled feta.","Bake for 20–25 minutes until puffed and golden. Serve with salad."]}
+ // ---------- more dinners: treats
+ ,{id:"seabass",t:"d",tr:3,name:"Sea bass with crushed potatoes & lemon butter",m:"fish",time:30,r:4.9,ing:[["seabass",90],["babypot",180],["finebeans",70],["tomcherry",50],["lemon",.25],["butter",10]],
+  steps:["Boil the potatoes for 15 minutes, adding the green beans for the last 4. Drain and lightly crush the potatoes.","Season the sea bass and fry skin-side down for 3–4 minutes until crisp, then turn for 1 minute.","Melt the butter in the pan with lemon juice and the halved tomatoes.","Spoon the lemon butter over the fish and serve with the potatoes and beans."]}
+ ,{id:"duck",t:"d",tr:3,name:"Crispy duck legs with roast squash & greens",m:"duck",time:80,r:5.1,ing:[["duck",1],["squash",.25],["kale",40],["redonion",40],["honey",5],["spices",.5]],
+  steps:["Prick the duck skin, season and roast at 180°C (160°C fan) for 70 minutes.","Add chunks of squash and red onion to the tray for the last 40 minutes, turning them in the duck fat.","Drizzle the honey over the duck for the last 10 minutes.","Wilt the kale in a pan with a spoon of the fat and serve."],tip:"Save the duck fat in a jar for the best roast potatoes."}
+ ,{id:"lambsteaks",t:"d",tr:3,name:"Rosemary lamb steaks with new potatoes & greens",m:"lamb",time:35,r:5.0,ing:[["lambsteak",140],["babypot",180],["finebeans",60],["garlic",1],["herbs",.5],["oil",10],["tomcherry",50]],
+  steps:["Roast the halved potatoes and tomatoes with half the oil at 200°C (180°C fan) for 30 minutes.","Rub the lamb with garlic, herbs and the rest of the oil.","Fry the lamb for 3–4 minutes each side, then rest for 5 minutes.","Serve with the potatoes, tomatoes and steamed green beans."]}
+ ,{id:"stroganoff",t:"d",tr:3,name:"Beef stroganoff with rice",m:"beef",time:25,r:4.9,ing:[["beefstrips",120],["mushroom",100],["onion",50],["cremefraiche",50],["spices",.5],["basmati",70],["stock",.25]],
+  steps:["Cook the rice.","Sear the beef strips in a very hot pan for 1–2 minutes and set aside.","Fry the onion and sliced mushrooms until golden, add paprika and the stock in 80 ml water per portion.","Stir in the crème fraîche, return the beef and heat through without boiling."]}
+ ,{id:"pestocod",t:"d",tr:3,name:"Pesto-crusted cod with roast tomatoes & potatoes",m:"fish",time:35,r:4.8,ing:[["cod",120],["pesto",20],["tomcherry",80],["babypot",180],["spinach",30],["oil",8]],
+  steps:["Roast the halved potatoes with the oil at 200°C (180°C fan) for 15 minutes.","Add the tomatoes and the defrosted cod, spread with pesto, and roast for 12–15 minutes until the fish flakes.","Wilt the spinach and serve alongside."]}
+ ,{id:"chickenpie",t:"d",tr:3,name:"Chicken, leek & mushroom puff pie",m:"chicken",time:50,r:5.0,ing:[["chickbreast",110],["leek",.4],["mushroom",60],["cremefraiche",50],["puff",55],["stock",.25],["peas",50],["herbs",.5]],
+  steps:["Brown the diced chicken, then add the sliced leek and mushrooms and cook for 6 minutes.","Stir in the crème fraîche, herbs and stock in 60 ml water per portion. Simmer for 5 minutes.","Tip into a pie dish, top with the pastry and brush with milk.","Bake at 200°C (180°C fan) for 25 minutes until golden. Serve with peas."]}
+ ,{id:"prawnrisotto",t:"d",tr:3,name:"King prawn, pea & lemon risotto",m:"fish",time:35,r:4.8,ing:[["prawns",80],["risotto",80],["peas",50],["lemon",.25],["stock",.5],["onion",40],["butter",8],["grana",10]],
+  steps:["Soften the onion in the butter, stir in the rice for a minute.","Add the hot stock a ladle at a time, stirring, for 18 minutes.","Stir in the prawns and peas and cook for 3–4 minutes until the prawns are pink.","Finish with lemon zest, juice and grated cheese."]}
+ ,{id:"padthai",t:"d",tr:3,name:"King prawn pad thai-style noodles",m:"fish",time:25,r:4.8,ing:[["prawns",80],["ricenoodles",70],["eggs",1],["soy",15],["lime",.3],["springonion",1],["carrot",40],["pepper",.3],["chilli",3],["pb",10],["coriander",.1]],
+  steps:["Cook the rice noodles as the packet says.","Stir-fry the prawns with chilli until pink, then push aside and scramble the egg.","Add the carrot and pepper, then the noodles, soy, lime juice and peanut butter loosened with a splash of water.","Toss together and finish with spring onions and coriander."]}
+ ,{id:"paneer",t:"d",tr:3,name:"Paneer, spinach & pea curry with naan",m:"veg",time:30,r:4.8,ing:[["paneer",80],["spinach",60],["peas",50],["choptom",.5],["onion",60],["ginger",5],["garlic",1],["spices",1.5],["greekyog",30],["naan",1]],
+  steps:["Fry cubes of paneer in a little oil until golden and set aside.","Soften the onion, then add ginger, garlic and spices for a minute.","Add the chopped tomatoes and simmer for 10 minutes. Stir in the spinach, peas and paneer.","Take off the heat, stir in the yoghurt and serve with warm naan."]}
+ // ---------- more lunches
+ ,{id:"leeksoup",t:"l",tr:1,name:"Leek & potato soup with bread",m:"veg",time:30,r:3.7,ing:[["leek",.4],["potato",120],["onion",30],["stock",.5],["milk",50],["bread",2]],steps:["Soften the sliced leek and onion in a little oil for 8 minutes.","Add the diced potato and stock in 300 ml water per portion and simmer for 15 minutes.","Add the milk, blend and serve with bread."]}
+ ,{id:"minestrone",t:"l",tr:1,name:"Minestrone with pesto",m:"veg",time:30,r:3.8,ing:[["choptom",.25],["carrot",40],["leek",.2],["butterbeans",.25],["wwpasta",25],["stock",.5],["pesto",10],["bread",1]],steps:["Soften the diced carrot and leek, then add the chopped tomatoes and stock in 350 ml water per portion.","Add the beans and pasta and simmer for 12 minutes.","Serve with a spoon of pesto stirred in and bread on the side."]}
+ ,{id:"nicoise",t:"l",tr:2,name:"Tuna niçoise salad",m:"fish",time:20,r:4.0,ing:[["tuna",.5],["eggs",1],["babypot",100],["finebeans",50],["tomcherry",50],["salad",20],["lemon",.1],["oil",8]],steps:["Boil the potatoes for 12 minutes, adding the beans for the last 4 and the egg for 9.","Halve the potatoes, peel and quarter the egg.","Arrange over salad with tomatoes and tuna, dressed with lemon and oil."]}
+ ,{id:"bagel",t:"l",tr:3,name:"Smoked salmon & soft cheese bagel",m:"fish",time:5,r:4.2,ing:[["bagels",1],["smokedsalmon",50],["softcheese",25],["cucumber",.15],["lemon",.1],["salad",10]],steps:["Toast the bagel.","Spread with soft cheese, top with smoked salmon, cucumber and a squeeze of lemon."]}
+ ,{id:"beetsalad",t:"l",tr:2,name:"Beetroot, feta & quinoa salad",m:"veg",time:20,r:3.9,ing:[["beetroot",80],["feta",30],["quinoa",40],["salad",30],["walnuts",10],["lemon",.1],["oil",8]],steps:["Cook the quinoa for 12–15 minutes and cool.","Toss with salad, chopped beetroot, lemon and oil.","Top with crumbled feta and walnuts."]}
+ ,{id:"chickpeasalad",t:"l",tr:1,name:"Mediterranean chickpea salad",m:"veg",time:10,r:3.6,ing:[["chickpeas",.5],["tomcherry",60],["cucumber",.2],["redonion",20],["feta",20],["lemon",.15],["oil",8]],steps:["Mix the drained chickpeas with chopped tomatoes, cucumber and red onion.","Dress with lemon and oil, and top with feta."]}
+ ,{id:"snackbox",t:"l",tr:1,name:"Houmous, egg & veg snack box",m:"veg",time:10,r:3.5,ing:[["eggs",1],["hummus",40],["carrot",60],["cucumber",.2],["pitta",1]],steps:["Hard-boil the egg for 9 minutes, cool and halve.","Pack with houmous, carrot and cucumber sticks and pitta for dipping."]}
+ // ---------- more breakfasts
+ ,{id:"salmonbagel",t:"b",tr:3,name:"Smoked salmon & scrambled egg bagel",m:"fish",time:10,r:4.3,ing:[["bagels",1],["smokedsalmon",40],["eggs",1.5],["butter",5]],steps:["Scramble the eggs gently in the butter.","Toast the bagel and top with the eggs and smoked salmon."]}
+ ,{id:"smoothie",t:"b",tr:1,name:"Berry & banana smoothie",m:"veg",time:5,r:3.6,ing:[["banana",1],["berries",80],["greekyog",80],["milk",100],["oats",20]],steps:["Blend everything until smooth. Add a splash more milk if it's too thick."]}
+ ,{id:"mushtoast",t:"b",tr:2,name:"Garlic mushrooms & egg on toast",m:"veg",time:10,r:3.9,ing:[["mushroom",80],["tomcherry",60],["bread",2],["eggs",1],["garlic",.5],["butter",6]],steps:["Fry the mushrooms and tomatoes in butter with garlic until golden.","Fry or poach the egg and serve everything on toast."]}
+ ,{id:"appleporridge",t:"b",tr:1,name:"Apple & cinnamon porridge with walnuts",m:"veg",time:6,r:3.7,ing:[["oats",50],["milk",200],["apple",.5],["walnuts",10],["honey",5]],steps:["Cook the oats and milk with the grated apple and a pinch of cinnamon for 3 minutes.","Top with walnuts and honey."]}
+ ,{id:"burrito",t:"b",tr:2,name:"Breakfast burrito",m:"veg",time:10,r:4.0,ing:[["wraps",1],["eggs",2],["blackbeans",.25],["tomcherry",40],["cheddar",15]],steps:["Scramble the eggs, stirring in the warmed beans at the end.","Fill the warm wrap with the eggs, chopped tomatoes and grated cheese, and roll."]}
+
 ];
 const R = Object.fromEntries(RECIPES.map(r => [r.id, r]));
 const DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
 const MEALS = [["b","Breakfast"],["l","Lunch"],["d","Dinner"]];
 const MEAL_NAME = Object.fromEntries(MEALS);
-const PROTEIN = {beef:"Beef",lamb:"Lamb",chicken:"Chicken",pork:"Pork",fish:"Fish",veg:"Vegetarian"};
+const PROTEIN = {beef:"Beef",lamb:"Lamb",turkey:"Turkey",duck:"Duck",chicken:"Chicken",pork:"Pork",fish:"Fish",veg:"Vegetarian"};
 const TIER = {1:"Everyday",2:"Step-up",3:"Treat"};
 const PORK = new Set(["sausage","bacon","chorizo","porkloin"]);
-const FISH = new Set(["salmon","cod","prawns","tuna","mackerel"]);
+const FISH = new Set(["salmon","cod","prawns","tuna","mackerel","seabass","smokedsalmon"]);
 for (const r of RECIPES) {
   r.hasMeat = r.ing.some(([id]) => ING[id].a === "meat");
   r.hasPork = r.ing.some(([id]) => PORK.has(id));
   r.hasFish = r.ing.some(([id]) => FISH.has(id));
+  r.hero = r.ing.filter(([id]) => !ING[id].st).sort((a, b) => ING[b[0]].p / ING[b[0]].size * b[1] - ING[a[0]].p / ING[a[0]].size * a[1])[0][0];
   r.fv = r.ing.reduce((s, [id, q]) => s + (ING[id].fv ? q * ING[id].fv / 80 : 0), 0); // 5-a-day portions per serving
 }
 const DIET_NAME = {any:"",nopork:"no pork",pesc:"pescatarian",veg:"vegetarian"};
@@ -870,20 +954,30 @@ function score(plan, slots){
   const planned = slots.filter(k => R[plan[k]]).length;
   const target = S.budget * 0.94 * Math.min(1, planned / full);
   if (e.eaten < target) s += (target - e.eaten) * 0.85;
-  const counts = {};
+  const counts = {}, heroes = {};
   for (const k of slots) {
     const id = plan[k], r = R[id]; if (!r) continue;
     s -= (r.r + Math.min(r.fv, 3) * .3) * (r.t === "d" ? 1 : .55);
     const c = (counts[id] = (counts[id] || 0) + 1);
-    if (r.t === "d") { if (c === 2) s += 4.5; if (c > 2) s += 30; }
-    else if (r.t === "l") { if (c > 1) s += .9; if (c > 3) s += 12; }
-    else { if (c > 1) s += .25; if (c > 4) s += 4; }
+    // A repeat must save real money to be worth it: its penalty outweighs the spend it adds, so a big budget
+    // buys variety, while a tight one can still double up to use whole packs.
+    const pcost = pcOf(id) * S.people;
+    if (r.t === "d") {
+      if (c === 2) s += 6 + pcost * 1.1; if (c > 2) s += 30;
+      const h = (heroes[r.hero] = (heroes[r.hero] || 0) + 1);
+      if (h === 2) s += 1.5 + pcost * .4; if (h > 2) s += 5;
+    }
+    else if (r.t === "l") { if (c > 1) s += 1.2 + pcost * .7; if (c > 3) s += 12; }
+    else { if (c > 1) s += .3 + pcost * .4; if (c > 3) s += 4; }
     const d = +k[0];
     if (d > 0 && plan[(d - 1) + "-" + k[2]] === id && r.t !== "b") s += r.t === "d" ? 6 : 1.5;
   }
   return s;
 }
+let PCC = {};
+const pcOf = id => PCC[id] != null ? PCC[id] : (PCC[id] = portionCost(R[id]));
 function optimise(fixed){
+  PCC = {};
   const slots = activeSlots();
   const pools = {}; for (const [m] of MEALS) pools[m] = RECIPES.filter(r => r.t === m && allowed(r)).map(r => r.id);
   const free = slots.filter(k => !(k in fixed) && pools[k[2]].length);
@@ -1470,6 +1564,7 @@ document.addEventListener("click", e => {
       break;
     }
     case "reject": {
+      PCC = {};
       const snap = snapshot(), cur = S.plan[k], slots = activeSlots();
       let best = null, bestS = Infinity;
       for (const r of RECIPES) {
