@@ -278,6 +278,8 @@ td.r,th.r{text-align:right}
 .notice{display:flex;gap:12px;align-items:flex-start;padding:12px 16px;border-radius:var(--r);background:var(--bad-soft);color:var(--ink);font-size:14px}
 .notice svg{color:var(--bad);flex:none;margin-top:2px}
 .notice b{color:var(--bad)}
+#planChrome{display:flex;flex-direction:column;gap:18px}
+#planChrome[hidden]{display:none}
 #notice{display:flex;flex-direction:column;gap:10px}
 #notice:empty{display:none}
 .notice.info{background:var(--brand-soft)}
@@ -394,6 +396,92 @@ textarea.copybox{width:100%;min-height:300px;font-family:var(--f-mono);font-size
 .viz-tip b{display:block;font-weight:700}
 .usage-foot{padding:10px 16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
 
+/* Home */
+.home{display:flex;flex-direction:column;gap:18px}
+.hero{position:relative;background:var(--brand);color:var(--brand-ink);border-radius:var(--r);padding:28px 28px 26px;overflow:hidden;isolation:isolate}
+.hero::after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;border-radius:50%;background:var(--accent);opacity:.18;z-index:-1}
+.hero::before{content:"";position:absolute;right:70px;bottom:-90px;width:180px;height:180px;border-radius:50%;background:var(--brand-ink);opacity:.06;z-index:-1}
+.hero .eyebrow{margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.8}
+.hero h1{font-size:clamp(30px,5vw,44px);font-weight:800;line-height:1.05;letter-spacing:-.03em}
+.hero-sub{margin:12px 0 0;max-width:58ch;font-size:15.5px;opacity:.92}
+.hero-sub b{font-weight:700}
+.hero-cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.hero .btn.primary{background:var(--brand-ink);color:var(--brand);border-color:var(--brand-ink)}
+.hero .btn:not(.primary){background:transparent;color:var(--brand-ink);border-color:color-mix(in srgb,var(--brand-ink) 40%,transparent)}
+.hero .btn:not(.primary):hover{background:color-mix(in srgb,var(--brand-ink) 12%,transparent)}
+.count-chip{font-family:var(--f-mono);font-size:11.5px;background:color-mix(in srgb,var(--brand-ink) 18%,transparent);border-radius:999px;padding:1px 8px}
+.name-edit{position:absolute;top:16px;right:16px;color:var(--brand-ink);opacity:.8;display:inline-flex;align-items:center;gap:5px}
+.name-edit:hover{background:color-mix(in srgb,var(--brand-ink) 15%,transparent);color:var(--brand-ink);opacity:1}
+.home-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:18px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px 18px;min-width:0}
+.panel.wide{grid-column:1/-1}
+.panel-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px}
+.panel-h h2{font-size:20px;font-weight:800}
+.hm-list,.recent-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.hm-list li,.recent-list li{display:flex;align-items:center;gap:8px}
+.hm-list li+li,.recent-list li+li{border-top:1px solid var(--line)}
+.hm-row,.rc-row{all:unset;box-sizing:border-box;flex:1;min-width:0;display:grid;grid-template-columns:auto 84px minmax(0,1fr) auto auto;align-items:center;gap:10px;padding:12px 4px;cursor:pointer;border-radius:8px}
+div.hm-row{cursor:default}
+.hm-row:hover,.rc-row:hover{background:var(--surface-2)}
+.hm-row:focus-visible,.rc-row:focus-visible{outline:2px solid var(--brand)}
+.hm-type{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.hm-name{font-weight:600;font-size:15px;line-height:1.3}
+.hm-meta{font-size:12.5px;color:var(--muted);white-space:nowrap}
+.hm-go{color:var(--muted);display:grid}
+.hm-empty{display:flex;align-items:center;gap:10px;padding:16px;border:1px dashed var(--line);border-radius:10px;color:var(--muted);font-size:14px}
+.hm-stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.hm-stats>div{background:var(--surface);padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.hm-stats b{font-family:var(--f-display);font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.hm-stats b.bad{color:var(--bad)}
+.hm-stats small{color:var(--muted);font-size:12.5px}
+.rc-row{grid-template-columns:72px minmax(0,1fr) auto}
+.rc-date{display:flex;flex-direction:column;font-size:12.5px;color:var(--muted);line-height:1.3}
+.rc-date b{color:var(--ink);font-size:14px}
+.rc-meals{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:14px;min-width:0}
+.rc-meals span{display:inline-flex;align-items:center;gap:6px;min-width:0}
+/* Onboarding */
+.ob-logo{margin-bottom:10px}
+.text-in{height:46px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--bg);padding:0 14px;font-size:17px;font-weight:600;width:100%}
+.text-in:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+.field-err{color:var(--bad);font-size:13px;font-weight:600}
+.ob-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.ob-row .money-in{width:100%}
+.ob-row .money-in input{width:100%}
+.onboard{display:contents}
+/* Calendar */
+.calendar{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.cal-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 16px;border-bottom:1px solid var(--line)}
+.cal-nav{display:flex;align-items:center;gap:6px}
+.cal-nav h2{font-size:22px;font-weight:800;min-width:9.5ch;text-align:center}
+.sw-planned{width:12px;height:12px;border-radius:3px;border:1.5px dashed var(--muted);display:inline-block}
+.cal-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));border-bottom:1px solid var(--line)}
+.cal-stats>div{padding:12px 16px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.cal-stats>div+div{border-left:1px solid var(--line)}
+.cal-stats b{font-family:var(--f-display);font-size:22px;font-weight:800;line-height:1.15}
+.cal-stats b.top{font-family:var(--f-body);font-size:14.5px;font-weight:600;line-height:1.35}
+.cal-stats small{color:var(--muted);font-family:var(--f-mono);font-size:12px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
+.cal-h{padding:8px 10px;font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);background:var(--surface-2);border-bottom:1px solid var(--line)}
+.cd{all:unset;box-sizing:border-box;min-height:92px;padding:8px 9px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:5px;min-width:0;position:relative}
+.cal-grid>.cd:nth-child(7n+7){border-right:0}
+button.cd{cursor:pointer}
+button.cd:hover{background:var(--surface-2)}
+button.cd:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}
+.cd.other{background:color-mix(in srgb,var(--surface-2) 50%,transparent)}
+.cd.other .cd-n{opacity:.45}
+.cd-n{font-family:var(--f-mono);font-size:12.5px;font-weight:500;color:var(--muted)}
+.cd.today .cd-n{background:var(--brand);color:var(--brand-ink);border-radius:999px;padding:1px 7px;width:max-content;font-weight:600}
+.cd.future.has::after{content:"";position:absolute;inset:4px;border:1.5px dashed var(--line);border-radius:8px;pointer-events:none}
+.cd.future.has .cd-name{color:var(--muted)}
+.cd-dots{display:flex;gap:4px}
+.cd-dots .dot{width:8px;height:8px}
+.cd-name{font-size:12.5px;line-height:1.3;font-weight:500;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cd-out{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--warn)}
+.cal-foot{display:flex;gap:10px;align-items:flex-start;padding:12px 16px;font-size:13px;color:var(--muted)}
+.cal-foot svg{flex:none;margin-top:1px}
+/* Bottom navigation (phones) */
+.bottomnav{display:none}
+
 @keyframes fade{from{opacity:0}}
 @keyframes rise{from{opacity:0;transform:translateY(12px)}}
 @keyframes pop{0%{background:var(--accent-soft)}100%{background:transparent}}
@@ -453,6 +541,37 @@ textarea.copybox{width:100%;min-height:300px;font-family:var(--f-mono);font-size
   .tab-actions .btn{flex:1}
   th,td{padding-left:12px;padding-right:12px}
   .hide-sm{display:none}
+  .tabbar .tabs{display:none}
+  #planChrome{gap:14px}
+  .tabbar:has(.tab-actions:empty){display:none}
+  main{padding-bottom:calc(92px + env(safe-area-inset-bottom,0px))}
+  .bottomnav{display:grid;grid-template-columns:repeat(6,1fr);position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--surface);border-top:1px solid var(--line);padding:6px max(4px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(4px,env(safe-area-inset-left,0px));box-shadow:0 -4px 18px rgba(0,0,0,.05)}
+  .bn{all:unset;cursor:pointer;position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 0 3px;border-radius:10px;color:var(--muted);font-size:10.5px;font-weight:600}
+  .bn svg{width:22px;height:22px}
+  .bn[aria-current=page]{color:var(--brand)}
+  .bn[aria-current=page] svg{background:var(--brand-soft);border-radius:999px;padding:3px 14px;box-sizing:content-box;margin:-3px 0}
+  .bn:focus-visible{outline:2px solid var(--brand)}
+  .bn-badge{position:absolute;top:0;left:calc(50% + 8px);font-style:normal;font-family:var(--f-mono);font-size:9.5px;font-weight:600;background:var(--accent);color:#1a1300;border-radius:999px;padding:0 5px;line-height:15px}
+  .toast{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+  .hero{padding:22px 18px 20px}
+  .name-edit{position:static;margin-top:14px}
+  .hero{display:flex;flex-direction:column;align-items:flex-start}
+  .hero-cta .btn{flex:1}
+  .home-grid{grid-template-columns:1fr}
+  .hm-row{grid-template-columns:auto minmax(0,1fr) auto;row-gap:2px}
+  .hm-row .hm-type{display:none}
+  .hm-row .hm-meta{grid-column:2;grid-row:2}
+  .hm-row .hm-go{grid-column:3;grid-row:1/3}
+  .cd{min-height:58px;padding:5px 4px;gap:4px}
+  .cd-name,.cd-out span{display:none}
+  .cd-dots{gap:3px;flex-wrap:wrap}
+  .cd-dots .dot{width:7px;height:7px}
+  .cal-h{padding:6px 4px;text-align:center;font-size:10px}
+  .cal-nav h2{font-size:18px}
+  .cal-stats{grid-template-columns:1fr 1fr}
+  .cal-stats>div:nth-child(odd){border-left:0}
+  .cal-stats>div:nth-child(n+3){border-top:1px solid var(--line)}
+  .ob-row{grid-template-columns:1fr}
   .plot{grid-template-columns:minmax(104px,1.3fr) repeat(7,minmax(34px,1fr));min-width:0;font-size:13px}
   .ph.last,.pc.last{display:none}
   .ph.first,.pc.first{padding-left:10px}
@@ -478,6 +597,18 @@ textarea.copybox{width:100%;min-height:300px;font-family:var(--f-mono);font-size
 </header>
 
 <main class="wrap">
+  <div class="tabbar">
+    <div class="tabs" role="tablist" aria-label="Views">
+      <button class="tab" role="tab" id="tab-home" aria-controls="view-home" data-tab="home">Home</button>
+      <button class="tab" role="tab" id="tab-week" aria-controls="view-week" data-tab="week">Week plan</button>
+      <button class="tab" role="tab" id="tab-shop" aria-controls="view-shop" data-tab="shop"><span>Shopping<span class="hide-sm"> list</span></span><span class="count" id="shopCount"></span></button>
+      <button class="tab" role="tab" id="tab-usage" aria-controls="view-usage" data-tab="usage">When used</button>
+      <button class="tab" role="tab" id="tab-calendar" aria-controls="view-calendar" data-tab="calendar">Calendar</button>
+      <button class="tab" role="tab" id="tab-prices" aria-controls="view-prices" data-tab="prices">Prices</button>
+    </div>
+    <div class="tab-actions" id="tabActions"></div>
+  <section id="view-home" role="tabpanel" aria-labelledby="tab-home" hidden></section>
+  <div id="planChrome">
   <section class="settings" aria-label="Plan settings">
     <div class="field f-budget">
       <label class="label" for="budgetNum">Weekly budget</label>
@@ -523,25 +654,20 @@ textarea.copybox{width:100%;min-height:300px;font-family:var(--f-mono);font-size
 
   <div id="notice"></div>
   <section class="summary" id="summary" aria-label="Budget summary"></section>
+  </div>
 
-  <div class="tabbar">
-    <div class="tabs" role="tablist" aria-label="Views">
-      <button class="tab" role="tab" id="tab-week" aria-controls="view-week" data-tab="week">Week plan</button>
-      <button class="tab" role="tab" id="tab-shop" aria-controls="view-shop" data-tab="shop"><span>Shopping<span class="hide-sm"> list</span></span><span class="count" id="shopCount"></span></button>
-      <button class="tab" role="tab" id="tab-usage" aria-controls="view-usage" data-tab="usage">When used</button>
-      <button class="tab" role="tab" id="tab-prices" aria-controls="view-prices" data-tab="prices">Prices</button>
-    </div>
-    <div class="tab-actions" id="tabActions"></div>
   </div>
 
   <section id="view-week" role="tabpanel" aria-labelledby="tab-week"></section>
   <section id="view-shop" role="tabpanel" aria-labelledby="tab-shop" hidden></section>
   <section id="view-usage" role="tabpanel" aria-labelledby="tab-usage" hidden></section>
+  <section id="view-calendar" role="tabpanel" aria-labelledby="tab-calendar" hidden></section>
   <section id="view-prices" role="tabpanel" aria-labelledby="tab-prices" hidden></section>
 
   <footer>Prices are estimates of typical Lidl GB shelf prices and vary by store and over time. Update anything that looks off on the Prices tab and the plan and list recalculate. Larder is an independent planner and isn't affiliated with Lidl. Your plan, ticks and prices are saved in this browser only.</footer>
 </main>
 
+<nav class="bottomnav" aria-label="Sections" id="bottomNav"></nav>
 <div class="modal" id="modal" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mTitle" id="sheet"></div>
 </div>
@@ -864,7 +990,7 @@ const DIET_NAME = {any:"",nopork:"no pork",pesc:"pescatarian",veg:"vegetarian"};
 
 /* ------------------------------------------------------------------ state */
 const KEY = "larder.v1";
-const DEFAULTS = {budget:40,people:2,meals:{b:true,l:true,d:true},diet:"any",pantry:true,prices:{},have:{},ticked:{},plan:{},locks:{},banIng:{},banMeal:{},daysOff:{},usageSort:"aisle"};
+const DEFAULTS = {budget:40,people:2,meals:{b:true,l:true,d:true},diet:"any",pantry:true,prices:{},have:{},ticked:{},plan:{},locks:{},banIng:{},banMeal:{},daysOff:{},usageSort:"aisle",name:"",planWeek:"",log:{},weeks:{}};
 let S = load();
 function load(){
   let s = null;
@@ -875,7 +1001,7 @@ function load(){
   out.meals = Object.assign({b:true,l:true,d:true}, s.meals || {});
   for (const k in out.plan) if (out.plan[k] !== "skip" && !R[out.plan[k]]) delete out.plan[k];
   for (const k in out.prices) if (!ING[k]) delete out.prices[k];
-  out.banIng = out.banIng || {}; out.banMeal = out.banMeal || {}; out.daysOff = out.daysOff || {};
+  out.banIng = out.banIng || {}; out.banMeal = out.banMeal || {}; out.daysOff = out.daysOff || {}; out.log = out.log || {}; out.weeks = out.weeks || {}; out.name = typeof out.name === "string" ? out.name : "";
   return out;
 }
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
@@ -913,11 +1039,41 @@ function ingLine(id, q){
 }
 const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
 const fiveText = n => n < .2 ? "" : frac(Math.round(n * 2) / 2 || .5) + " of 5 a day";
-function weekStart(){
+const iso = d => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+const parseISO = k => { const [y, m, d] = k.split("-").map(Number); return new Date(y, m - 1, d); };
+const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+const todayISO = () => iso(new Date());
+// The week a new plan is for: this Monday, or next Monday from Friday onwards (planning ahead for the weekend shop).
+function currentWeekStart(){
   const d = new Date(); d.setHours(0,0,0,0);
   const dow = (d.getDay() + 6) % 7; // Monday = 0
   if (dow >= 4) d.setDate(d.getDate() + (7 - dow)); else d.setDate(d.getDate() - dow);
   return d;
+}
+const weekStart = () => S.planWeek ? parseISO(S.planWeek) : currentWeekStart();
+const planDates = () => [0,1,2,3,4,5,6].map(d => iso(addDays(weekStart(), d)));
+// One day's meals: from the live plan for this week's dates, otherwise from the saved calendar.
+function dayRecord(key){
+  const idx = planDates().indexOf(key);
+  if (idx >= 0) {
+    if (S.daysOff[idx]) return {out: 1, cur: 1, d: idx, p: S.people};
+    const m = {};
+    for (const [mm] of MEALS) if (S.meals[mm]) { const id = S.plan[idx + "-" + mm]; if (R[id]) m[mm] = [id, R[id].name]; }
+    return Object.keys(m).length ? {m, cur: 1, d: idx, p: S.people} : null;
+  }
+  return S.log[key] || null;
+}
+// When a new week starts, save last week's plan to the calendar and start a fresh plan.
+function rollover(){
+  const cur = iso(currentWeekStart());
+  if (!S.planWeek) { S.planWeek = cur; return false; }
+  if (S.planWeek >= cur) return false;
+  const e = evaluate(S.plan);
+  S.weeks[S.planWeek] = {cost: Math.round(e.cost * 100) / 100, budget: S.budget, people: S.people};
+  for (const k of planDates()) { const r = dayRecord(k); if (r) { const {cur: _c, d: _d, ...rest} = r; S.log[k] = rest; } }
+  S.plan = {}; S.locks = {}; S.ticked = {}; S.have = {}; S.daysOff = {};
+  S.planWeek = cur;
+  return true;
 }
 const fmtDate = (d, o) => d.toLocaleDateString("en-GB", o);
 const dietOK = r => S.diet === "any" ? true : S.diet === "veg" ? !r.hasMeat && !r.hasFish : S.diet === "pesc" ? !r.hasMeat : !r.hasPork;
@@ -1080,11 +1236,20 @@ const ICON = {
   eye:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7c2 0 3.7.6 5.1 1.5M22 12s-3.5 7-10 7c-2 0-3.7-.6-5.1-1.5"/><path d="M3 3l18 18"/></svg>',
   info:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/></svg>',
   out:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3v8a2 2 0 0 0 2 2v8"/><path d="M11 3v8a2 2 0 0 1-2 2"/><path d="M9 3v6"/><path d="M17 21V3c-2 1-3 4-3 7s1 4 3 4"/></svg>',
+  home:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/></svg>',
+  week:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M7 13h4M7 17h8"/></svg>',
+  cart:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6"/><circle cx="10" cy="20.5" r="1.2"/><circle cx="17" cy="20.5" r="1.2"/></svg>',
+  dots:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" opacity=".35"/><circle cx="7" cy="6" r="1.8" fill="currentColor"/><circle cx="15" cy="12" r="1.8" fill="currentColor"/><circle cx="10" cy="18" r="1.8" fill="currentColor"/></svg>',
+  cal:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/><path d="M7.5 13h.01M12 13h.01M16.5 13h.01M7.5 17h.01M12 17h.01"/></svg>',
+  tag:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.3"/></svg>',
+  chevL:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg>',
+  chevR:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>',
+  pencil:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>',
   clock:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'
 };
 let TAB = "week";
-const view = {week: $("#view-week"), shop: $("#view-shop"), usage: $("#view-usage"), prices: $("#view-prices")};
-const TABS = ["week","shop","usage","prices"];
+const view = {home: $("#view-home"), calendar: $("#view-calendar"), week: $("#view-week"), shop: $("#view-shop"), usage: $("#view-usage"), prices: $("#view-prices")};
+const TABS = ["home","week","shop","usage","calendar","prices"];
 
 function renderControls(){
   $("#budgetNum").value = S.budget;
@@ -1272,6 +1437,7 @@ function renderTabActions(){
   const a = $("#tabActions");
   if (TAB === "week") a.innerHTML = `<button class="btn sm ghost" data-action="unlockall" ${Object.keys(S.locks).length ? "" : "disabled"}>Unlock all</button><button class="btn sm" data-action="tab" data-tab="shop">See shopping list</button>`;
   else if (TAB === "shop") a.innerHTML = `<button class="btn sm" data-action="copy">${ICON.copy} Copy list</button>`;
+  else if (TAB === "home" || TAB === "calendar") a.innerHTML = "";
   else if (TAB === "usage") a.innerHTML = `<div class="seg" role="group" aria-label="Sort ingredients"><button data-action="usort" data-v="aisle" aria-pressed="${S.usageSort === "aisle"}">By aisle</button><button data-action="usort" data-v="first" aria-pressed="${S.usageSort === "first"}">By first use</button><button data-action="usort" data-v="most" aria-pressed="${S.usageSort === "most"}">Most used</button></div>`;
   else a.innerHTML = `<button class="btn sm ghost" data-action="resetall" ${Object.keys(S.prices).length ? "" : "disabled"}>Reset all prices</button>`;
 }
@@ -1280,20 +1446,25 @@ function render(){
   renderControls(); renderSummary(); renderWeek(); renderShop();
   if (TAB === "prices") renderPrices();
   if (TAB === "usage") renderUsage();
+  if (TAB === "home") renderHome();
+  if (TAB === "calendar") renderCalendar();
   renderTabActions();
+  $("#planChrome").hidden = TAB === "home" || TAB === "calendar";
+  renderBottomNav();
   for (const t of TABS) {
     view[t].hidden = t !== TAB;
     const b = $("#tab-" + t); b.setAttribute("aria-selected", t === TAB); b.tabIndex = t === TAB ? 0 : -1;
   }
 }
 function setTab(t, push){
-  if (!view[t]) t = "week";
+  if (!view[t]) t = "home";
   TAB = t;
   if (push !== false) { try { history.replaceState(null, "", "#" + t); } catch (e) { location.hash = t; } }
   render();
 }
 
 /* ------------------------------------------------------------------ modal */
+let onboarding = false, calMonth = null;
 let modalSlot = null, lastFocus = null, prefsOpen = false, prefsFilter = "";
 function openModal(html){
   lastFocus = document.activeElement;
@@ -1302,7 +1473,9 @@ function openModal(html){
   const f = $("#sheet").querySelector("[data-autofocus]") || $("#sheet").querySelector("button");
   f && f.focus();
 }
-function closeModal(){
+function closeModal(force){
+  if (onboarding && force !== true) return;
+  onboarding = false;
   $("#modal").hidden = true; document.body.style.overflow = ""; modalSlot = null; prefsOpen = false;
   lastFocus && lastFocus.focus && document.contains(lastFocus) && lastFocus.focus();
 }
@@ -1435,6 +1608,208 @@ function renderUsage(){
   </div>`;
 }
 
+/* ---------- bottom navigation (phones) */
+const NAV = [["home","Home","home"],["week","Week","week"],["shop","Shop","cart"],["calendar","Calendar","cal"],["usage","Used","dots"],["prices","Prices","tag"]];
+function renderBottomNav(){
+  $("#bottomNav").innerHTML = NAV.map(([t, label, ic]) => `<button class="bn" data-tab="${t}" aria-current="${t === TAB ? "page" : "false"}">${ICON[ic]}<span>${label}</span>${t === "shop" && $("#shopCount").textContent ? `<i class="bn-badge">${$("#shopCount").textContent}</i>` : ""}</button>`).join("");
+}
+
+/* ---------- home */
+function greeting(){ const h = new Date().getHours(); return h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening"; }
+function mealRow(slotOrNull, mm, id, nm){
+  const r = R[id], label = MEAL_NAME[mm];
+  const body = `<i class="dot ${mm}"></i><span class="hm-type">${label}</span><span class="hm-name">${esc(r ? r.name : nm)}</span>${r ? `<span class="hm-meta">${r.time} min${r.tr === 3 ? ' · <b class="tier t3">Treat</b>' : ""}</span>` : ""}`;
+  if (slotOrNull && r) return `<li><button class="hm-row" data-action="open" data-slot="${slotOrNull}">${body}<span class="hm-go" aria-hidden="true">${ICON.chevR}</span></button></li>`;
+  if (r) return `<li><button class="hm-row" data-action="logrecipe" data-r="${id}">${body}<span class="hm-go" aria-hidden="true">${ICON.chevR}</span></button></li>`;
+  return `<li><div class="hm-row">${body}</div></li>`;
+}
+function renderHome(){
+  const today = new Date(); today.setHours(0,0,0,0);
+  const tk = iso(today), dates = planDates(), idx = dates.indexOf(tk);
+  const e = evaluate(S.plan), {rows} = shopping();
+  const buy = rows.filter(r => costed(r.id)), ticked = buy.filter(r => S.ticked[r.id]).length;
+  const meals = activeSlots().filter(k => R[S.plan[k]]).length;
+  const ws = weekStart();
+  // Which day to feature: today if it's in the plan, otherwise the first planned day
+  let fIdx = idx >= 0 ? idx : 0;
+  if (idx < 0) for (let d = 0; d < 7; d++) if (!S.daysOff[d]) { fIdx = d; break; }
+  const fDate = addDays(ws, fIdx);
+  const fTitle = idx >= 0 ? "Today" : (fIdx === 0 && today < ws ? `Starts ${DAYS[fIdx]}` : DAYS[fIdx]);
+  const fRec = dayRecord(dates[fIdx]);
+  const fList = fRec && fRec.out ? `<div class="hm-empty">${ICON.out}<span>Eating out ${idx >= 0 ? "today" : "on " + DAYS[fIdx]}. Enjoy it.</span></div>`
+    : fRec ? `<ul class="hm-list">${MEALS.filter(([m]) => fRec.m[m]).map(([m]) => mealRow(fIdx + "-" + m, m, fRec.m[m][0], fRec.m[m][1])).join("")}</ul>`
+    : `<div class="hm-empty"><span>Nothing planned for this day.</span></div>`;
+  // Recently eaten: past days from the calendar, newest first
+  const past = [];
+  for (let i = 1; i <= 60 && past.length < 5; i++) { const k = iso(addDays(today, -i)); const r = dayRecord(k); if (r) past.push([k, r]); }
+  const recent = past.length ? `<ul class="recent-list">${past.map(([k, r]) => `<li><button class="rc-row" data-action="calday" data-date="${k}"><span class="rc-date"><b>${fmtDate(parseISO(k), {weekday:"short"})}</b>${fmtDate(parseISO(k), {day:"numeric", month:"short"})}</span><span class="rc-meals">${r.out ? '<span class="hint">Ate out</span>' : MEALS.filter(([m]) => r.m && r.m[m]).map(([m]) => `<span><i class="dot ${m}"></i>${esc(r.m[m][1])}</span>`).join("")}</span><span class="hm-go" aria-hidden="true">${ICON.chevR}</span></button></li>`).join("")}</ul>`
+    : `<div class="hm-empty"><span>Meals you've had will show here and in your calendar as the days go by.</span></div>`;
+  const loggedMeals = Object.values(S.log).reduce((n, r) => n + (r.m ? Object.keys(r.m).length : 0), 0) + Object.keys(S.log).length * 0;
+  const st = status(e.cost);
+  view.home.innerHTML = `<div class="home">
+    <section class="hero">
+      <div class="hero-text">
+        <p class="eyebrow">${fmtDate(today, {weekday:"long", day:"numeric", month:"long"})}</p>
+        <h1>${greeting()}${S.name ? ", " + esc(S.name) : ""}</h1>
+        <p class="hero-sub">Your week from ${fmtDate(ws, {weekday:"long", day:"numeric", month:"long"})} is planned: <b>${meals} meals</b> for ${S.people === 1 ? "1 person" : S.people + " people"}, about <b>${money(e.cost)}</b> of your ${money(S.budget)} budget.</p>
+        <div class="hero-cta">
+          <button class="btn primary" data-action="tab" data-tab="week">${ICON.week} See the week</button>
+          <button class="btn" data-action="tab" data-tab="shop">${ICON.cart} Shopping list <span class="count-chip">${buy.length - ticked} to get</span></button>
+        </div>
+      </div>
+      <button class="link-btn name-edit" data-action="rename">${ICON.pencil} ${S.name ? "Not " + esc(S.name) + "?" : "Add your name"}</button>
+    </section>
+    <div class="home-grid">
+      <section class="panel">
+        <div class="panel-h"><h2>${fTitle}</h2><span class="hint">${fmtDate(fDate, {weekday:"long", day:"numeric", month:"short"})}</span></div>
+        ${fList}
+      </section>
+      <section class="panel">
+        <div class="panel-h"><h2>This week</h2><button class="link-btn" data-action="tab" data-tab="week">Change</button></div>
+        <div class="hm-stats">
+          <div><span class="label">Shop</span><b class="num ${st === "bad" ? "bad" : ""}">${money(e.cost)}</b><small>${st === "bad" ? money(e.cost - S.budget) + " over" : money(S.budget - e.cost) + " left"}</small></div>
+          <div><span class="label">In trolley</span><b class="num">${ticked}/${buy.length}</b><small>items ticked off</small></div>
+          <div><span class="label">Eating out</span><b class="num">${7 - daysPlanned()}</b><small>day${7 - daysPlanned() === 1 ? "" : "s"} this week</small></div>
+          <div><span class="label">In your calendar</span><b class="num">${loggedMeals}</b><small>meals saved</small></div>
+        </div>
+      </section>
+      <section class="panel wide">
+        <div class="panel-h"><h2>Recently eaten</h2><button class="link-btn" data-action="tab" data-tab="calendar">Open calendar</button></div>
+        ${recent}
+      </section>
+    </div>
+  </div>`;
+}
+
+/* ---------- onboarding / name */
+function nameModal(first){
+  onboarding = !!first;
+  openModal(`<form class="onboard" id="onboardForm" novalidate>
+    <div class="sheet-h"><div style="flex:1;min-width:0">
+      ${first ? `<div class="ob-logo" aria-hidden="true"><svg width="44" height="44" viewBox="0 0 32 32"><rect x="4" y="3" width="24" height="6" rx="2" fill="var(--accent)"/><path d="M6 10h20v15a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4z" fill="var(--brand)"/><rect x="10" y="15" width="12" height="7" rx="1.5" fill="var(--surface)"/><path d="M12 18.5h8" stroke="var(--brand)" stroke-width="1.6" stroke-linecap="round"/></svg></div>` : ""}
+      <h2 id="mTitle">${first ? "Welcome to Larder" : "Your name"}</h2>
+      <p class="hint" style="margin:6px 0 0">${first ? "A week of meals and a Lidl shopping list that fits your budget. First, what should we call you?" : "This is how Larder greets you on the home screen."}</p>
+    </div>${first ? "" : `<button type="button" class="icon-btn" style="opacity:1" data-action="close" aria-label="Close">${ICON.close}</button>`}</div>
+    <div class="sheet-b">
+      <div class="field"><label class="label" for="nameIn">Your first name</label>
+        <input id="nameIn" class="text-in" type="text" maxlength="30" autocomplete="given-name" autocapitalize="words" value="${esc(S.name)}" placeholder="e.g. Sam" data-autofocus>
+        <span class="field-err" id="nameErr" hidden>Enter a name so we know what to call you.</span></div>
+      ${first ? `<div class="ob-row">
+        <div class="field"><label class="label" for="obBudget">Weekly budget</label><div class="money-in"><span>£</span><input id="obBudget" type="number" inputmode="decimal" min="10" max="300" value="${S.budget}"></div></div>
+        <div class="field"><label class="label" for="obPeople">People</label><select id="obPeople">${[1,2,3,4,5,6,7,8].map(n => `<option value="${n}"${n === S.people ? " selected" : ""}>${n} ${n === 1 ? "person" : "people"}</option>`).join("")}</select></div>
+      </div><p class="hint" style="margin:12px 0 0">You can change these any time.</p>` : ""}
+    </div>
+    <div class="sheet-f"><span class="spacer"></span><button type="submit" class="btn primary">${first ? "Plan my week" : "Save"}</button></div>
+  </form>`);
+  const f = $("#onboardForm");
+  f.addEventListener("submit", ev => {
+    ev.preventDefault();
+    const nm = $("#nameIn").value.trim().replace(/\s+/g, " ");
+    if (!nm) { $("#nameErr").hidden = false; $("#nameIn").focus(); return; }
+    S.name = nm.slice(0, 30);
+    let regen = false;
+    if (first) {
+      const bv = Math.round(+$("#obBudget").value), pv = +$("#obPeople").value;
+      if (bv >= 10 && bv <= 300 && bv !== S.budget) { S.budget = bv; regen = true; }
+      if (pv !== S.people) { S.people = pv; regen = true; }
+    }
+    save(); closeModal(true);
+    if (regen) replan(() => toast(`Hi ${S.name}, your week is planned`));
+    else { render(); toast(first ? `Hi ${S.name}, your week is planned` : "Name saved"); }
+  });
+}
+
+/* ---------- calendar */
+function monthStats(y, m){
+  const days = new Date(y, m + 1, 0).getDate(), today = todayISO();
+  let mealsN = 0, out = 0, daysLogged = 0; const dish = {};
+  for (let d = 1; d <= days; d++) {
+    const k = iso(new Date(y, m, d)); if (k > today) continue;
+    const r = dayRecord(k); if (!r) continue;
+    daysLogged++;
+    if (r.out) { out++; continue; }
+    for (const mm in r.m) { mealsN++; const [id, nm] = r.m[mm]; if (mm !== "b") dish[nm] = (dish[nm] || 0) + 1; }
+  }
+  const top = Object.entries(dish).sort((a, b) => b[1] - a[1])[0];
+  let spend = 0;
+  for (const wk in S.weeks) { const w = parseISO(wk); if (w.getFullYear() === y && w.getMonth() === m) spend += S.weeks[wk].cost; }
+  return {mealsN, out, daysLogged, distinct: Object.keys(dish).length, top, spend};
+}
+function renderCalendar(){
+  const now = new Date();
+  if (!calMonth) calMonth = {y: now.getFullYear(), m: now.getMonth()};
+  const {y, m} = calMonth, first = new Date(y, m, 1), tk = todayISO();
+  const lead = (first.getDay() + 6) % 7, days = new Date(y, m + 1, 0).getDate();
+  const cells = Math.ceil((lead + days) / 7) * 7;
+  const st = monthStats(y, m), dates = planDates();
+  let grid = "";
+  for (let i = 0; i < cells; i++) {
+    const d = new Date(y, m, 1 - lead + i), k = iso(d), inMonth = d.getMonth() === m;
+    const r = dayRecord(k), future = k > tk, isToday = k === tk;
+    const cls = ["cd", inMonth ? "" : "other", isToday ? "today" : "", future ? "future" : "", r && r.out ? "out" : "", r ? "has" : "", dates.includes(k) ? "cur" : ""].join(" ");
+    let inner = "";
+    if (r && r.out) inner = `<span class="cd-out">${ICON.out}<span>Out</span></span>`;
+    else if (r) inner = `<span class="cd-dots">${MEALS.map(([mm]) => r.m[mm] ? `<i class="dot ${mm}"></i>` : "").join("")}</span><span class="cd-name">${esc((r.m.d || r.m.l || r.m.b)[1])}</span>`;
+    const label = `${fmtDate(d, {weekday:"long", day:"numeric", month:"long"})}${r ? (r.out ? ", eating out" : ", " + Object.keys(r.m).length + " meals" + (future ? " planned" : "")) : ""}`;
+    grid += r ? `<button class="${cls}" data-action="calday" data-date="${k}" aria-label="${esc(label)}"><span class="cd-n">${d.getDate()}</span>${inner}</button>`
+              : `<div class="${cls}" aria-label="${esc(label)}"><span class="cd-n">${d.getDate()}</span></div>`;
+  }
+  const isNow = y === now.getFullYear() && m === now.getMonth();
+  const anyLog = Object.keys(S.log).length > 0;
+  view.calendar.innerHTML = `<div class="calendar">
+    <div class="cal-top">
+      <div class="cal-nav">
+        <button class="icon-btn" style="opacity:1" data-action="calnav" data-d="-1" aria-label="Previous month">${ICON.chevL}</button>
+        <h2 aria-live="polite">${fmtDate(first, {month:"long", year:"numeric"})}</h2>
+        <button class="icon-btn" style="opacity:1" data-action="calnav" data-d="1" aria-label="Next month">${ICON.chevR}</button>
+        ${isNow ? "" : `<button class="btn sm" data-action="calnav" data-d="0">This month</button>`}
+      </div>
+      <div class="legend">${MEALS.map(([mm, n]) => `<span><i class="dot ${mm}"></i>${n}</span>`).join("")}<span><i class="sw-planned"></i>Planned</span></div>
+    </div>
+    <div class="cal-stats">
+      <div><span class="label">Meals eaten</span><b class="num">${st.mealsN}</b></div>
+      <div><span class="label">Different dishes</span><b class="num">${st.distinct}</b></div>
+      <div><span class="label">Days eating out</span><b class="num">${st.out}</b></div>
+      <div><span class="label">Most eaten</span><b class="top">${st.top && st.top[1] > 1 ? esc(st.top[0]) + ` <small>×${st.top[1]}</small>` : st.mealsN ? "No repeats yet" : "–"}</b></div>
+      ${st.spend ? `<div><span class="label">Shops logged</span><b class="num">${money(st.spend)}</b></div>` : ""}
+    </div>
+    <div class="cal-grid" role="grid" aria-label="Meals by day">
+      ${["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(d => `<div class="cal-h" role="columnheader">${d}</div>`).join("")}
+      ${grid}
+    </div>
+    ${anyLog ? "" : `<div class="cal-foot">${ICON.info}<span>Each week's plan is saved here automatically when a new week starts, so your history builds up as you go. This week's plan is shown with a dashed outline until the day passes.</span></div>`}
+  </div>`;
+}
+function dayModal(k){
+  const r = dayRecord(k), d = parseISO(k), future = k > todayISO();
+  if (!r) return;
+  const rows = r.out ? `<div class="hm-empty">${ICON.out}<span>Eating out.</span></div>`
+    : `<ul class="hm-list">${MEALS.filter(([m]) => r.m[m]).map(([m]) => {
+        const [id, nm] = r.m[m];
+        const row = mealRow(r.cur ? r.d + "-" + m : null, m, id, nm);
+        return r.cur ? row : row.replace("</li>", `<button class="link-btn" data-action="logremove" data-date="${k}" data-m="${m}" aria-label="Remove ${esc(nm)} from ${esc(fmtDate(d, {weekday:"long"}))}">Remove</button></li>`);
+      }).join("")}</ul>`;
+  openModal(`<div class="sheet-h"><div style="flex:1;min-width:0">
+      <div class="eyebrow">${future ? "Planned" : r.cur ? "This week" : "Eaten"}${r.p ? ` · for ${r.p === 1 ? "1 person" : r.p + " people"}` : ""}</div>
+      <h2 id="mTitle">${fmtDate(d, {weekday:"long", day:"numeric", month:"long"})}</h2>
+    </div><button class="icon-btn" style="opacity:1" data-action="close" aria-label="Close">${ICON.close}</button></div>
+    <div class="sheet-b">${rows}${r.cur ? `<p class="hint" style="margin:14px 0 0">This day is in your current plan. Open a meal to swap or skip it.</p>` : ""}</div>
+    <div class="sheet-f"><span class="spacer"></span>${r.cur ? `<button class="btn" data-action="tab" data-tab="week">Open week plan</button>` : ""}<button class="btn primary" data-action="close">Done</button></div>`);
+}
+function logRecipeModal(id){
+  const r = R[id]; if (!r) return;
+  openModal(`<div class="sheet-h"><div style="flex:1;min-width:0">
+      <div class="eyebrow"><i class="dot ${r.t}"></i>${MEAL_NAME[r.t]}</div>
+      <h2 id="mTitle">${esc(r.name)}</h2>
+      <div class="tags"><span class="pill neutral">${ICON.clock} ${r.time} min</span><span class="pill neutral">${TIER[r.tr]}</span>${r.fv >= .5 ? `<span class="pill good">${fiveText(r.fv)}</span>` : ""}</div>
+    </div><button class="icon-btn" style="opacity:1" data-action="close" aria-label="Close">${ICON.close}</button></div>
+    <div class="sheet-b"><div class="recipe">
+      <div><h3>Ingredients · serves ${S.people}</h3><ul class="ing-list">${r.ing.map(([iid, q]) => { const l = ingLine(iid, q * S.people); return `<li><span>${esc(l.name)}</span><span class="amt">${esc(l.amt)}</span></li>`; }).join("")}</ul></div>
+      <div><h3>Method</h3><ol class="steps">${r.steps.map(x => `<li><span>${esc(x)}</span></li>`).join("")}</ol>${r.tip ? `<div class="tip"><b>Tip.</b> ${esc(r.tip)}</div>` : ""}</div>
+    </div></div>
+    <div class="sheet-f"><span class="spacer"></span><button class="btn primary" data-action="close">Done</button></div>`);
+}
+
 function copyFallback(text){
   openModal(`<div class="sheet-h"><div style="flex:1"><h2 id="mTitle">Copy your list</h2><p class="hint" style="margin:4px 0 0">Your browser blocked automatic copying. The text is selected, so press Ctrl+C or ⌘C.</p></div><button class="icon-btn" style="opacity:1" data-action="close" aria-label="Close">${ICON.close}</button></div>
     <div class="sheet-b"><textarea class="copybox" id="copyBox" readonly>${esc(text)}</textarea></div>`);
@@ -1518,8 +1893,8 @@ document.addEventListener("change", e => {
 });
 
 document.addEventListener("click", e => {
-  const tabBtn = e.target.closest(".tab");
-  if (tabBtn) { setTab(tabBtn.dataset.tab); return; }
+  const tabBtn = e.target.closest(".tab,.bn");
+  if (tabBtn) { setTab(tabBtn.dataset.tab); if (tabBtn.classList.contains("bn")) window.scrollTo(0, 0); return; }
   if (e.target === $("#modal")) { closeModal(); return; }
   const b = e.target.closest("[data-action]");
   if (!b || b.tagName === "INPUT") return;
@@ -1611,11 +1986,25 @@ document.addEventListener("click", e => {
       break;
     }
     case "prefs": prefsModal(); break;
+    case "rename": nameModal(false); break;
+    case "calday": dayModal(b.dataset.date); break;
+    case "logrecipe": logRecipeModal(b.dataset.r); break;
+    case "logremove": {
+      const k2 = b.dataset.date, mm = b.dataset.m, rec = S.log[k2];
+      if (rec && rec.m) { const old = JSON.stringify(rec); delete rec.m[mm]; if (!Object.keys(rec.m).length) delete S.log[k2]; save(); renderCalendar(); if (S.log[k2]) dayModal(k2); else closeModal(); toast("Removed from your calendar", () => { S.log[k2] = JSON.parse(old); save(); renderCalendar(); }); }
+      break;
+    }
+    case "calnav": {
+      const dd = +b.dataset.d, n = new Date();
+      if (!dd) calMonth = {y: n.getFullYear(), m: n.getMonth()};
+      else { const x = new Date(calMonth.y, calMonth.m + dd, 1); calMonth = {y: x.getFullYear(), m: x.getMonth()}; }
+      renderCalendar(); break;
+    }
     case "usort": S.usageSort = b.dataset.v; save(); renderUsage(); renderTabActions(); break;
     case "unlockall": S.locks = {}; save(); render(); toast("All meals unlocked"); break;
     case "close": closeModal(); break;
     case "clearprefs": { const snap = snapshot(); S.banIng = {}; S.banMeal = {}; generate({keepAll: true}); render(); prefsModal(true); toast("Avoid list cleared", () => restore(snap)); break; }
-    case "tab": setTab(b.dataset.tab); window.scrollTo({top: $(".tabbar").offsetTop - 70, behavior: "smooth"}); break;
+    case "tab": if (!$("#modal").hidden) closeModal(); setTab(b.dataset.tab); window.scrollTo({top: TAB === "home" || TAB === "calendar" ? 0 : $(".tabbar").offsetTop - 70, behavior: "smooth"}); break;
     case "have": S.have[id] = 1; delete S.ticked[id]; save(); render(); toast(`${ING[id].n} taken off the bill`, () => { delete S.have[id]; save(); render(); }); break;
     case "need": delete S.have[id]; save(); render(); break;
     case "untick": S.ticked = {}; save(); renderShop(); break;
@@ -1650,13 +2039,17 @@ document.addEventListener("keydown", e => {
 window.addEventListener("hashchange", () => { const h = location.hash.slice(1); if (view[h] && h !== TAB) setTab(h, false); });
 
 /* ------------------------------------------------------------------ boot */
+const rolled = rollover();
 if (!activeSlots().some(k => S.plan[k])) generate({keepAll: true});
 else if (activeSlots().some(k => !S.plan[k])) generate({keepAll: true});
 changed = new Set();
 const h = location.hash.slice(1);
-TAB = view[h] ? h : "week";
+TAB = view[h] ? h : "home";
 render();
-window.__larder = {get S(){return S}, evaluate, generate, R, ING, allowed};
+if (!S.name) nameModal(true);
+else if (rolled) toast(`New week, ${S.name}. Last week is saved in your calendar.`);
+save();
+window.__larder = {get S(){return S}, evaluate, generate, R, ING, allowed, rollover, render};
 })();
 </script>
 

@@ -2,7 +2,7 @@
   "name": "Larder Weekly",
   "short_name": "Larder",
   "description": "Plan a week of meals and a Lidl shopping list that fits your budget.",
-  "start_url": "./#week",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
