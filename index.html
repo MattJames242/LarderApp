@@ -118,17 +118,26 @@ select{height:42px;border:1px solid var(--line);border-radius:var(--r-sm);backgr
 .btn:active{transform:translateY(1px)}
 .btn.primary{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
 .btn.primary:hover{filter:brightness(1.08);background:var(--brand)}
+.btn.busy{pointer-events:none;opacity:.85}
+.btn.busy svg{animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+body.planning .week,body.planning .summary{opacity:.55;transition:opacity .15s}
 .btn.ghost{border-color:transparent;background:transparent;color:var(--muted)}
 .btn.ghost:hover{background:var(--surface-2);color:var(--ink)}
 .btn.sm{height:34px;padding:0 12px;font-size:13px}
 .btn svg{flex:none}
 
 /* Summary band */
-.summary{display:grid;grid-template-columns:minmax(0,1.5fr) repeat(3,minmax(0,1fr));background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.summary{display:grid;grid-template-columns:minmax(0,1.5fr) repeat(4,minmax(0,1fr));background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
 .sum-main{padding:18px 20px;display:flex;flex-direction:column;gap:10px;min-width:0}
 .sum-total{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .sum-total strong{font-family:var(--f-display);font-weight:800;font-size:40px;line-height:1;letter-spacing:-.03em}
 .sum-total span{color:var(--muted);font-size:14px}
+.mix{display:flex;gap:6px;flex-wrap:wrap;font-size:12.5px}
+.mx{border-radius:999px;padding:2px 9px;background:var(--surface-2);color:var(--muted)}
+.mx b{color:var(--ink);font-weight:700}
+.mx.t2{background:var(--brand-soft)}
+.mx.t3{background:var(--accent-soft)}
 .meter{position:relative;height:10px;border-radius:999px;background:var(--surface-2);overflow:visible}
 .meter-fill{position:absolute;inset:0 auto 0 0;border-radius:999px;background:var(--brand);transition:width .35s ease}
 .meter-fill.warn{background:var(--accent)}
@@ -171,6 +180,9 @@ select{height:42px;border:1px solid var(--line);border-radius:var(--r-sm);backgr
 .meal-name:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:4px}
 .meal-meta{font-size:12.5px;color:var(--muted);display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .meal-meta .free{color:var(--good);font-weight:600}
+.tier{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;border-radius:999px;padding:1px 7px;line-height:1.6}
+.tier.t2{background:var(--brand-soft);color:var(--ink)}
+.tier.t3{background:var(--accent-soft);color:var(--warn)}
 .meal-act{position:absolute;top:8px;right:8px;display:flex;gap:2px}
 .icon-btn{width:30px;height:30px;border-radius:7px;border:0;background:transparent;color:var(--muted);display:grid;place-items:center;opacity:.55;transition:opacity .12s,background .12s}
 .meal:hover .icon-btn,.icon-btn:focus-visible,.icon-btn[aria-pressed=true]{opacity:1}
@@ -249,6 +261,10 @@ td.r,th.r{text-align:right}
 .notice{display:flex;gap:12px;align-items:flex-start;padding:12px 16px;border-radius:var(--r);background:var(--bad-soft);color:var(--ink);font-size:14px}
 .notice svg{color:var(--bad);flex:none;margin-top:2px}
 .notice b{color:var(--bad)}
+#notice{display:flex;flex-direction:column;gap:10px}
+#notice:empty{display:none}
+.notice.info{background:var(--brand-soft)}
+.notice.info svg,.notice.info b{color:var(--ink)}
 
 footer{color:var(--muted);font-size:12.5px;line-height:1.55;max-width:70ch}
 
@@ -369,7 +385,7 @@ textarea.copybox{width:100%;min-height:300px;font-family:var(--f-mono);font-size
 @media (max-width:1020px){
   .settings{grid-template-columns:1fr 1fr}
   .settings .f-budget{grid-column:1/-1}
-  .summary{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .summary{grid-template-columns:repeat(4,minmax(0,1fr))}
   .sum-main{grid-column:1/-1;border-bottom:1px solid var(--line)}
   .stat:nth-child(2){border-left:0}
   .shop{grid-template-columns:1fr}
@@ -396,7 +412,8 @@ textarea.copybox{width:100%;min-height:300px;font-family:var(--f-mono);font-size
   .summary{grid-template-columns:1fr 1fr}
   .stat{padding:14px 16px}
   .stat:nth-child(2){border-left:0}
-  .stat:nth-child(4){grid-column:1/-1;border-left:0;border-top:1px solid var(--line)}
+  .stat:nth-child(4){border-left:0}
+  .stat:nth-child(4),.stat:nth-child(5){border-top:1px solid var(--line)}
   .sum-total strong{font-size:34px}
   .item{grid-template-columns:auto minmax(0,1fr) auto;row-gap:4px;padding:10px 12px}
   .item .iqty{display:none}
@@ -512,132 +529,229 @@ textarea.copybox{width:100%;min-height:300px;font-family:var(--f-mono);font-size
 "use strict";
 
 /* ------------------------------------------------------------------ data */
-// size = pack size in the unit u; p = estimated price (£); w = how much an unused remainder counts as waste (0 keeps for weeks, 1 goes off fast)
+// size = pack size in unit u; p = estimated price (£); w = how much an unused remainder counts as waste (0 keeps for weeks, 1 goes off fast)
+// fv = grams of fruit/veg per unit, for the 5-a-day estimate (80 g = one portion)
 const ING = {
-  onion:{n:"Brown onions",a:"veg",size:1000,u:"g",p:.89,pk:"1 kg bag",s:"onion",ea:[150,"onion"],w:.4},
-  carrot:{n:"Carrots",a:"veg",size:1000,u:"g",p:.55,pk:"1 kg bag",s:"carrot",ea:[80,"carrot"],w:.4},
+  onion:{n:"Brown onions",a:"veg",size:1000,u:"g",p:.89,pk:"1 kg bag",s:"onion",ea:[150,"onion"],w:.4,fv:1},
+  redonion:{n:"Red onions",a:"veg",size:1000,u:"g",p:.99,pk:"1 kg bag",s:"red onion",ea:[140,"red onion"],w:.4,fv:1},
+  carrot:{n:"Carrots",a:"veg",size:1000,u:"g",p:.55,pk:"1 kg bag",s:"carrot",ea:[80,"carrot"],w:.4,fv:1},
   potato:{n:"White potatoes",a:"veg",size:2500,u:"g",p:1.69,pk:"2.5 kg bag",s:"potato",ea:[250,"potato"],w:.25},
-  sweetpot:{n:"Sweet potatoes",a:"veg",size:1000,u:"g",p:1.19,pk:"1 kg bag",s:"sweet potato",ea:[300,"sweet potato"],w:.5},
+  babypot:{n:"Baby potatoes",a:"veg",size:1000,u:"g",p:1.09,pk:"1 kg bag",s:"baby potatoes",w:.4},
+  sweetpot:{n:"Sweet potatoes",a:"veg",size:1000,u:"g",p:1.19,pk:"1 kg bag",s:"sweet potato",ea:[300,"sweet potato"],w:.5,fv:1},
+  squash:{n:"Butternut squash",a:"veg",size:1,u:"each",un:"",p:.99,pk:"each",s:"butternut squash",w:.6,fv:900},
+  aubergine:{n:"Aubergine",a:"veg",size:1,u:"each",un:"",p:.75,pk:"each",s:"aubergine",w:1,fv:270},
+  courgette:{n:"Courgettes",a:"veg",size:2,u:"each",un:"",p:.89,pk:"2 pack",s:"courgette",w:1,fv:220},
   garlic:{n:"Garlic",a:"veg",size:30,u:"each",un:"clove",p:.79,pk:"3 bulbs",s:"garlic",w:.1},
-  pepper:{n:"Mixed peppers",a:"veg",size:3,u:"each",un:"",p:1.39,pk:"3 pack",s:"pepper",w:1},
-  tomcherry:{n:"Cherry tomatoes",a:"veg",size:250,u:"g",p:.75,pk:"250 g",s:"cherry tomatoes",w:1},
-  mushroom:{n:"Closed cup mushrooms",a:"veg",size:300,u:"g",p:.95,pk:"300 g",s:"mushrooms",w:1},
-  spinach:{n:"Baby spinach",a:"veg",size:240,u:"g",p:1.15,pk:"240 g bag",s:"spinach",w:1},
-  broccoli:{n:"Broccoli",a:"veg",size:1,u:"each",un:"head",p:.59,pk:"each",s:"broccoli",w:1},
-  cucumber:{n:"Cucumber",a:"veg",size:1,u:"each",un:"",p:.69,pk:"each",s:"cucumber",w:1},
-  banana:{n:"Bananas",a:"veg",size:5,u:"each",un:"",p:.85,pk:"5 pack",s:"banana",w:1},
-  apple:{n:"Apples",a:"veg",size:6,u:"each",un:"",p:1.19,pk:"6 pack",s:"apple",w:.5},
-  bread:{n:"Wholemeal bread",a:"bakery",size:18,u:"each",un:"slice",p:.79,pk:"800 g loaf",s:"bread",w:.5},
-  wraps:{n:"Plain tortilla wraps",a:"bakery",size:8,u:"each",un:"wrap",p:1.09,pk:"8 pack",s:"",w:.4},
+  ginger:{n:"Root ginger",a:"veg",size:150,u:"g",p:.55,pk:"about 150 g",s:"fresh ginger",w:.3},
+  chilli:{n:"Red chillies",a:"veg",size:50,u:"g",p:.49,pk:"50 g",s:"red chilli",w:.6},
+  springonion:{n:"Spring onions",a:"veg",size:8,u:"each",un:"",p:.45,pk:"bunch",s:"spring onion",w:1},
+  pepper:{n:"Mixed peppers",a:"veg",size:3,u:"each",un:"",p:1.39,pk:"3 pack",s:"pepper",w:1,fv:100},
+  tomcherry:{n:"Cherry tomatoes",a:"veg",size:250,u:"g",p:.75,pk:"250 g",s:"cherry tomatoes",w:1,fv:1},
+  mushroom:{n:"Closed cup mushrooms",a:"veg",size:300,u:"g",p:.95,pk:"300 g",s:"mushrooms",w:1,fv:1},
+  spinach:{n:"Baby spinach",a:"veg",size:240,u:"g",p:1.15,pk:"240 g bag",s:"spinach",w:1,fv:1},
+  kale:{n:"Kale",a:"veg",size:200,u:"g",p:.85,pk:"200 g bag",s:"kale",w:1,fv:1},
+  salad:{n:"Mixed salad leaves",a:"veg",size:120,u:"g",p:.79,pk:"120 g bag",s:"salad leaves",w:1,fv:1},
+  finebeans:{n:"Fine green beans",a:"veg",size:200,u:"g",p:.95,pk:"200 g",s:"green beans",w:1,fv:1},
+  broccoli:{n:"Broccoli",a:"veg",size:1,u:"each",un:"head",p:.59,pk:"each",s:"broccoli",w:1,fv:350},
+  cucumber:{n:"Cucumber",a:"veg",size:1,u:"each",un:"",p:.69,pk:"each",s:"cucumber",w:1,fv:300},
+  avocado:{n:"Avocados",a:"veg",size:2,u:"each",un:"",p:1.39,pk:"2 pack",s:"avocado",w:1,fv:140},
+  lemon:{n:"Lemons",a:"veg",size:4,u:"each",un:"",p:.89,pk:"4 pack",s:"lemon",w:.4},
+  coriander:{n:"Fresh coriander",a:"veg",size:1,u:"each",un:"pack",p:.65,pk:"31 g pack",s:"coriander",w:1},
+  basil:{n:"Fresh basil",a:"veg",size:1,u:"each",un:"pack",p:.65,pk:"31 g pack",s:"basil",w:1},
+  banana:{n:"Bananas",a:"veg",size:5,u:"each",un:"",p:.85,pk:"5 pack",s:"banana",w:1,fv:120},
+  apple:{n:"Apples",a:"veg",size:6,u:"each",un:"",p:1.19,pk:"6 pack",s:"apple",w:.5,fv:150},
+  bread:{n:"Wholemeal bread",a:"bakery",size:18,u:"each",un:"slice",p:.79,pk:"800 g loaf",s:"wholemeal bread",w:.5},
+  wraps:{n:"Wholemeal tortilla wraps",a:"bakery",size:8,u:"each",un:"wrap",p:1.15,pk:"8 pack",s:"",w:.4},
+  pitta:{n:"Wholemeal pittas",a:"bakery",size:6,u:"each",un:"pitta",p:.59,pk:"6 pack",s:"",w:.4},
   milk:{n:"Semi-skimmed milk",a:"dairy",size:2272,u:"ml",p:1.55,pk:"4 pints",s:"milk",w:.8},
   cheddar:{n:"Mature cheddar",a:"dairy",size:400,u:"g",p:2.89,pk:"400 g",s:"cheddar",w:.2},
+  feta:{n:"Greek feta",a:"dairy",size:200,u:"g",p:1.25,pk:"200 g",s:"feta",w:.6},
+  halloumi:{n:"Halloumi",a:"dairy",size:225,u:"g",p:2.29,pk:"225 g",s:"halloumi",w:.5},
+  mozzarella:{n:"Mozzarella",a:"dairy",size:125,u:"g",p:.59,pk:"125 g ball",s:"mozzarella",w:1},
+  grana:{n:"Grana Padano",a:"dairy",size:150,u:"g",p:1.99,pk:"150 g wedge",s:"Grana Padano",w:.1},
   eggs:{n:"Free range eggs",a:"dairy",size:12,u:"each",un:"egg",p:2.49,pk:"12 medium",s:"",w:.2},
   greekyog:{n:"Greek style yoghurt",a:"dairy",size:500,u:"g",p:.99,pk:"500 g pot",s:"Greek-style yoghurt",w:1},
+  hummus:{n:"Houmous",a:"dairy",size:200,u:"g",p:.85,pk:"200 g tub",s:"houmous",w:1},
   butter:{n:"Spreadable butter",a:"dairy",size:500,u:"g",p:2.29,pk:"500 g tub",s:"butter",w:.05},
-  mince:{n:"Beef mince, 15% fat",a:"meat",size:500,u:"g",p:2.79,pk:"500 g",s:"beef mince",w:.6},
+  tofu:{n:"Firm tofu",a:"dairy",size:280,u:"g",p:1.49,pk:"280 g block",s:"firm tofu",w:.8},
+  mince:{n:"Beef mince, 5% fat",a:"meat",size:500,u:"g",p:3.29,pk:"500 g",s:"lean beef mince",w:.6},
+  lambmince:{n:"Lamb mince",a:"meat",size:400,u:"g",p:3.79,pk:"400 g",s:"lamb mince",w:.6},
+  steak:{n:"Beef rump steaks",a:"meat",size:400,u:"g",p:5.49,pk:"2 steaks, 400 g",s:"rump steak",w:.6},
   chickthigh:{n:"Chicken thighs, bone-in",a:"meat",size:1000,u:"g",p:2.99,pk:"1 kg",s:"chicken thighs",w:.6},
   chickbreast:{n:"Chicken breast fillets",a:"meat",size:650,u:"g",p:3.99,pk:"650 g",s:"chicken breast",w:.6},
+  porkloin:{n:"Pork loin steaks",a:"meat",size:500,u:"g",p:3.29,pk:"4 steaks, 500 g",s:"pork loin",w:.6},
   sausage:{n:"Pork sausages",a:"meat",size:8,u:"each",un:"sausage",p:1.59,pk:"8 pack",s:"",w:.5},
   bacon:{n:"Unsmoked back bacon",a:"meat",size:300,u:"g",p:1.79,pk:"300 g",s:"back bacon",w:.5},
-  fishfing:{n:"Cod fish fingers",a:"frozen",size:10,u:"each",un:"fish finger",p:1.49,pk:"10 pack",s:"",w:0},
-  peas:{n:"Garden peas",a:"frozen",size:1000,u:"g",p:1.09,pk:"1 kg bag",s:"frozen peas",w:0},
-  mixveg:{n:"Mixed vegetables",a:"frozen",size:1000,u:"g",p:.99,pk:"1 kg bag",s:"frozen mixed veg",w:0},
+  chorizo:{n:"Chorizo ring",a:"meat",size:225,u:"g",p:2.19,pk:"225 g",s:"chorizo",w:.15},
+  salmon:{n:"Scottish salmon fillets",a:"fish",size:240,u:"g",p:3.49,pk:"2 fillets, 240 g",s:"salmon fillet",w:.7},
+  cod:{n:"Cod fillets, frozen",a:"frozen",size:480,u:"g",p:4.29,pk:"4 fillets, 480 g",s:"cod fillet",w:0},
+  prawns:{n:"Raw king prawns, frozen",a:"frozen",size:250,u:"g",p:3.29,pk:"250 g",s:"king prawns",w:0},
+  peas:{n:"Garden peas",a:"frozen",size:1000,u:"g",p:1.09,pk:"1 kg bag",s:"frozen peas",w:0,fv:1},
+  mixveg:{n:"Mixed vegetables",a:"frozen",size:1000,u:"g",p:.99,pk:"1 kg bag",s:"frozen mixed veg",w:0,fv:1},
+  berries:{n:"Mixed berries, frozen",a:"frozen",size:500,u:"g",p:1.99,pk:"500 g bag",s:"frozen berries",w:0,fv:1},
   spaghetti:{n:"Spaghetti",a:"cupboard",size:500,u:"g",p:.45,pk:"500 g",s:"spaghetti",w:0},
-  pasta:{n:"Fusilli pasta",a:"cupboard",size:500,u:"g",p:.45,pk:"500 g",s:"fusilli",w:0},
-  rice:{n:"Long grain rice",a:"cupboard",size:1000,u:"g",p:.89,pk:"1 kg",s:"rice",w:0},
+  wwpasta:{n:"Wholewheat penne",a:"cupboard",size:500,u:"g",p:.59,pk:"500 g",s:"wholewheat penne",w:0},
+  gnocchi:{n:"Potato gnocchi",a:"cupboard",size:500,u:"g",p:.89,pk:"500 g",s:"gnocchi",w:.3},
+  basmati:{n:"Brown basmati rice",a:"cupboard",size:1000,u:"g",p:1.59,pk:"1 kg",s:"brown basmati",w:0},
+  couscous:{n:"Couscous",a:"cupboard",size:500,u:"g",p:.75,pk:"500 g",s:"couscous",w:0},
+  quinoa:{n:"Quinoa",a:"cupboard",size:300,u:"g",p:1.59,pk:"300 g",s:"quinoa",w:0},
   noodles:{n:"Medium egg noodles",a:"cupboard",size:250,u:"g",p:.79,pk:"250 g",s:"egg noodles",w:0},
-  choptom:{n:"Chopped tomatoes",a:"cupboard",size:1,u:"each",un:"can",p:.37,pk:"400 g can",s:"chopped tomatoes",w:.6},
-  passata:{n:"Passata",a:"cupboard",size:500,u:"g",p:.49,pk:"500 g carton",s:"passata",w:.6},
-  lentils:{n:"Red split lentils",a:"cupboard",size:500,u:"g",p:.99,pk:"500 g",s:"red lentils",w:0},
-  kidney:{n:"Red kidney beans",a:"cupboard",size:1,u:"each",un:"can",p:.37,pk:"400 g can",s:"kidney beans",w:.6},
-  chickpeas:{n:"Chickpeas",a:"cupboard",size:1,u:"each",un:"can",p:.42,pk:"400 g can",s:"chickpeas",w:.6},
-  beans:{n:"Baked beans",a:"cupboard",size:1,u:"each",un:"can",p:.35,pk:"410 g can",s:"baked beans",w:.6},
-  sweetcorn:{n:"Sweetcorn",a:"cupboard",size:1,u:"each",un:"can",p:.55,pk:"326 g can",s:"sweetcorn",w:.6},
-  coconut:{n:"Coconut milk",a:"cupboard",size:1,u:"each",un:"can",p:.79,pk:"400 ml can",s:"coconut milk",w:.7},
-  tuna:{n:"Tuna chunks in brine",a:"cupboard",size:1,u:"each",un:"can",p:.79,pk:"145 g can",s:"tuna",w:.8},
+  choptom:{n:"Chopped tomatoes",a:"cupboard",size:1,u:"each",un:"can",p:.37,pk:"400 g can",s:"chopped tomatoes",w:.6,fv:400},
+  passata:{n:"Passata",a:"cupboard",size:500,u:"g",p:.49,pk:"500 g carton",s:"passata",w:.6,fv:1},
+  lentils:{n:"Red split lentils",a:"cupboard",size:500,u:"g",p:.99,pk:"500 g",s:"red lentils",w:0,fv:2},
+  kidney:{n:"Red kidney beans",a:"cupboard",size:1,u:"each",un:"can",p:.37,pk:"400 g can",s:"kidney beans",w:.6,fv:100},
+  blackbeans:{n:"Black beans",a:"cupboard",size:1,u:"each",un:"can",p:.49,pk:"400 g can",s:"black beans",w:.6,fv:100},
+  butterbeans:{n:"Butter beans",a:"cupboard",size:1,u:"each",un:"can",p:.45,pk:"400 g can",s:"butter beans",w:.6,fv:100},
+  chickpeas:{n:"Chickpeas",a:"cupboard",size:1,u:"each",un:"can",p:.42,pk:"400 g can",s:"chickpeas",w:.6,fv:100},
+  beans:{n:"Reduced sugar baked beans",a:"cupboard",size:1,u:"each",un:"can",p:.39,pk:"410 g can",s:"baked beans",w:.6,fv:100},
+  sweetcorn:{n:"Sweetcorn",a:"cupboard",size:1,u:"each",un:"can",p:.55,pk:"326 g can",s:"sweetcorn",w:.6,fv:260},
+  coconut:{n:"Light coconut milk",a:"cupboard",size:1,u:"each",un:"can",p:.85,pk:"400 ml can",s:"coconut milk",w:.7},
+  tuna:{n:"Tuna chunks in spring water",a:"cupboard",size:1,u:"each",un:"can",p:.79,pk:"145 g can",s:"tuna",w:.8},
+  mackerel:{n:"Mackerel fillets in tomato",a:"cupboard",size:1,u:"each",un:"can",p:.89,pk:"125 g can",s:"mackerel",w:.8},
   oats:{n:"Porridge oats",a:"cupboard",size:1000,u:"g",p:.89,pk:"1 kg",s:"porridge oats",w:0},
-  cornflakes:{n:"Corn flakes",a:"cupboard",size:500,u:"g",p:.95,pk:"500 g box",s:"corn flakes",w:0},
+  granola:{n:"Fruit & nut granola",a:"cupboard",size:750,u:"g",p:1.59,pk:"750 g box",s:"granola",w:0},
+  walnuts:{n:"Walnut pieces",a:"cupboard",size:200,u:"g",p:1.89,pk:"200 g",s:"walnuts",w:0},
   pb:{n:"Smooth peanut butter",a:"cupboard",size:340,u:"g",p:1.19,pk:"340 g jar",s:"peanut butter",w:0},
   pesto:{n:"Green pesto",a:"cupboard",size:190,u:"g",p:.99,pk:"190 g jar",s:"pesto",w:.4},
-  mayo:{n:"Mayonnaise",a:"cupboard",size:500,u:"ml",p:.99,pk:"500 ml jar",s:"mayonnaise",w:0},
+  harissa:{n:"Rose harissa paste",a:"cupboard",size:90,u:"g",p:1.15,pk:"90 g jar",s:"harissa",w:.15},
+  thaipaste:{n:"Thai red curry paste",a:"cupboard",size:190,u:"g",p:1.29,pk:"190 g jar",s:"Thai red curry paste",w:.15},
+  currypaste:{n:"Tikka curry paste",a:"cupboard",size:280,u:"g",p:1.09,pk:"280 g jar",s:"tikka curry paste",w:.15},
+  mayo:{n:"Light mayonnaise",a:"cupboard",size:500,u:"ml",p:.99,pk:"500 ml jar",s:"light mayonnaise",w:0},
   soy:{n:"Soy sauce",a:"cupboard",size:150,u:"ml",p:.69,pk:"150 ml bottle",s:"soy sauce",w:0},
   stock:{n:"Stock cubes",a:"cupboard",size:10,u:"each",un:"stock cube",p:.35,pk:"10 pack",s:"",w:0},
-  currypaste:{n:"Tikka curry paste",a:"cupboard",size:280,u:"g",p:1.09,pk:"280 g jar",s:"curry paste",w:.15},
-  oil:{n:"Vegetable oil",a:"staple",size:1000,u:"ml",p:1.89,pk:"1 litre",s:"oil",st:1,w:0},
-  spices:{n:"Chilli powder & ground cumin",a:"staple",size:40,u:"each",un:"tsp",p:1.10,pk:"2 small jars",s:"chilli powder or cumin",st:1,w:0},
+  oil:{n:"Olive oil",a:"staple",size:500,u:"ml",p:3.49,pk:"500 ml",s:"olive oil",st:1,w:0},
+  spices:{n:"Spices: chilli, cumin, paprika, garam masala",a:"staple",size:80,u:"each",un:"tsp",p:2.20,pk:"4 small jars",s:"mixed spices",st:1,w:0},
   herbs:{n:"Dried mixed herbs",a:"staple",size:30,u:"each",un:"tsp",p:.55,pk:"small jar",s:"dried mixed herbs",st:1,w:0},
   honey:{n:"Clear honey",a:"staple",size:340,u:"g",p:1.19,pk:"340 g jar",s:"honey",st:1,w:0}
 };
-const AISLES = [["veg","Fruit & veg"],["bakery","Bread & bakery"],["dairy","Milk, cheese & eggs"],["meat","Meat"],["frozen","Frozen"],["cupboard","Food cupboard"],["staple","Store cupboard basics"]];
+const AISLES = [["veg","Fruit & veg"],["bakery","Bread & bakery"],["dairy","Chilled & dairy"],["meat","Meat"],["fish","Fish"],["frozen","Frozen"],["cupboard","Food cupboard"],["staple","Store cupboard basics"]];
 
-// t: b/l/d meal slot, m: main protein, r: how much people tend to look forward to it (1–5), ing: per portion
+// t: b/l/d slot · m: main protein · tr: 1 everyday, 2 step-up, 3 treat · r: how much people look forward to it (1–5+) · ing: per portion
 const RECIPES = [
- {id:"bolognese",t:"d",name:"Spaghetti bolognese",m:"beef",time:35,r:4.6,ing:[["mince",125],["spaghetti",100],["choptom",.5],["onion",75],["carrot",50],["garlic",1],["stock",.25],["herbs",.5],["oil",5]],
-  steps:["Fry the chopped onion and grated carrot in the oil for 5 minutes until soft, then add the crushed garlic for a minute.","Turn up the heat, add the mince and brown it, breaking it up with a spoon.","Stir in the chopped tomatoes, crumbled stock cube, herbs and a splash of water. Simmer for 20 minutes until thick.","Cook the spaghetti in salted water, drain and serve with the sauce."],tip:"Doubles easily. Freeze extra sauce flat in a bag for a fast dinner next week."},
- {id:"chilli",t:"d",name:"Chilli con carne with rice",m:"beef",time:40,r:4.5,ing:[["mince",100],["kidney",.5],["choptom",.5],["onion",75],["pepper",.5],["garlic",1],["rice",75],["spices",1],["stock",.25]],
-  steps:["Soften the onion and pepper in a large pan for 5 minutes, add garlic and spices for 1 minute.","Add the mince and brown it well.","Stir in the chopped tomatoes, drained kidney beans and the stock cube with 100 ml water per portion. Simmer for 25 minutes.","Cook the rice while the chilli simmers. Season and serve."],tip:"A spoonful of Greek yoghurt on top works as soured cream."},
- {id:"traybake",t:"d",name:"Chicken thigh traybake",m:"chicken",time:50,r:4.8,ing:[["chickthigh",250],["potato",250],["pepper",.5],["onion",75],["carrot",75],["oil",10],["herbs",.5]],
-  steps:["Heat the oven to 200°C (180°C fan). Cut the potatoes and carrots into chunks and the onion and pepper into wedges.","Toss the veg with the oil, herbs, salt and pepper in a large roasting tin.","Sit the chicken thighs skin-side up on top and roast for 40–45 minutes until the skin is crisp and the juices run clear."],tip:"Roast spare thighs alongside and shred the meat for tomorrow's lunch wraps."},
- {id:"dahl",t:"d",name:"Red lentil dahl with rice",m:"veg",time:35,r:3.8,ing:[["lentils",75],["choptom",.5],["onion",75],["garlic",1],["coconut",.25],["spinach",40],["rice",75],["spices",1],["oil",5]],
-  steps:["Fry the onion in the oil until golden, then add garlic and spices for a minute.","Add the rinsed lentils, chopped tomatoes, coconut milk and 250 ml water per portion.","Simmer for 20–25 minutes, stirring now and then, until the lentils break down. Stir in the spinach to wilt.","Serve with rice."],tip:"Dahl thickens as it cools. Loosen leftovers with a splash of water."},
- {id:"sausmash",t:"d",name:"Sausages, mash & peas",m:"pork",time:30,r:4.5,ing:[["sausage",2],["potato",275],["peas",80],["onion",50],["butter",10],["milk",30],["stock",.25]],
-  steps:["Grill or oven-cook the sausages for 20–25 minutes, turning occasionally.","Boil the peeled, chopped potatoes for 15–18 minutes, drain and mash with the butter and milk.","For a quick gravy, soften sliced onion in a pan, add the stock cube dissolved in 150 ml hot water and simmer until reduced.","Cook the peas for 3 minutes and serve everything together."]},
- {id:"chickpeacurry",t:"d",name:"Chickpea & spinach curry",m:"veg",time:30,r:3.9,ing:[["chickpeas",.5],["choptom",.5],["onion",75],["spinach",50],["coconut",.25],["currypaste",25],["rice",75],["garlic",1]],
-  steps:["Fry the onion in a little oil for 5 minutes, then stir in garlic and curry paste for a minute.","Add chopped tomatoes, coconut milk and drained chickpeas. Simmer for 15 minutes.","Stir through the spinach until wilted and season.","Serve with rice."]},
- {id:"stirfry",t:"d",name:"Chicken & veg noodle stir-fry",m:"chicken",time:20,r:4.4,ing:[["chickbreast",125],["noodles",65],["pepper",.5],["carrot",50],["broccoli",.25],["soy",15],["garlic",1],["oil",10]],
-  steps:["Cook the noodles for 4 minutes, drain and rinse under cold water.","Stir-fry thin strips of chicken in hot oil for 5–6 minutes until cooked through.","Add sliced pepper, carrot ribbons and small broccoli florets with the garlic and cook for 3 minutes.","Toss in the noodles and soy sauce and heat through."],tip:"Cut everything before you start. The cooking takes under ten minutes."},
- {id:"tunabake",t:"d",name:"Tuna & sweetcorn pasta bake",m:"fish",time:35,r:3.9,ing:[["pasta",100],["tuna",.5],["sweetcorn",.25],["cheddar",30],["passata",125],["onion",40],["herbs",.5]],
-  steps:["Heat the oven to 200°C (180°C fan) and cook the pasta for 2 minutes less than the packet says.","Soften the onion in a pan, add the passata and herbs and simmer for 5 minutes.","Mix the drained pasta, sauce, tuna and sweetcorn in an ovenproof dish and top with grated cheddar.","Bake for 15–20 minutes until bubbling and golden."]},
- {id:"fajitas",t:"d",name:"Bean & pepper fajitas",m:"veg",time:25,r:3.9,ing:[["wraps",2],["pepper",.75],["onion",75],["kidney",.5],["cheddar",20],["greekyog",30],["spices",1],["oil",5]],
-  steps:["Slice the peppers and onion into strips and fry over a high heat for 6–8 minutes until charred at the edges.","Add the spices and drained kidney beans, lightly crushing a few, and cook for 3 minutes.","Warm the wraps in a dry pan and fill with the veg, grated cheese and a spoonful of yoghurt."]},
- {id:"cottagepie",t:"d",name:"Cottage pie",m:"beef",time:60,r:4.7,ing:[["mince",110],["potato",275],["carrot",60],["onion",60],["peas",40],["stock",.5],["milk",30],["butter",10],["herbs",.5]],
-  steps:["Brown the mince in a pan, add the diced onion and carrot and cook for 5 minutes.","Add the stock cube dissolved in 150 ml hot water per portion and the herbs. Simmer for 20 minutes, adding the peas at the end.","Meanwhile boil the potatoes and mash with butter and milk.","Spoon the mince into a dish, top with mash and bake at 200°C (180°C fan) for 20 minutes until golden."]},
- {id:"sweetjacket",t:"d",name:"Sweet potato with chilli beans",m:"veg",time:50,r:3.7,ing:[["sweetpot",300],["kidney",.5],["choptom",.5],["onion",50],["cheddar",25],["spices",1]],
-  steps:["Prick the sweet potatoes and bake at 200°C (180°C fan) for 45 minutes, or microwave for 8–10 minutes.","Fry the onion with the spices, add the chopped tomatoes and drained beans, and simmer for 10 minutes.","Split the potatoes, spoon in the beans and top with grated cheese."]},
- {id:"pestochicken",t:"d",name:"Chicken pesto pasta with broccoli",m:"chicken",time:20,r:4.5,ing:[["pasta",100],["pesto",40],["chickbreast",100],["broccoli",.3],["tomcherry",50],["oil",5]],
+ // ---------- dinners: everyday
+ {id:"bolognese",t:"d",tr:1,name:"Spaghetti bolognese with hidden veg",m:"beef",time:35,r:4.3,ing:[["mince",110],["spaghetti",90],["choptom",.5],["onion",70],["carrot",60],["mushroom",50],["garlic",1],["stock",.25],["herbs",.5],["oil",5]],
+  steps:["Fry the chopped onion, grated carrot and finely chopped mushrooms in the oil for 6 minutes, then add the crushed garlic for a minute.","Turn up the heat, add the mince and brown it, breaking it up with a spoon.","Stir in the chopped tomatoes, crumbled stock cube, herbs and a splash of water. Simmer for 20 minutes until thick.","Cook the spaghetti in salted water, drain and serve with the sauce."],tip:"The mushrooms and carrot disappear into the sauce and stretch the mince. Freeze extra sauce flat in a bag."},
+ {id:"chilli",t:"d",tr:1,name:"Chilli con carne with brown rice",m:"beef",time:40,r:4.3,ing:[["mince",100],["kidney",.5],["choptom",.5],["onion",70],["pepper",.5],["garlic",1],["basmati",70],["spices",1.5],["stock",.25],["greekyog",25]],
+  steps:["Soften the onion and pepper in a large pan for 5 minutes, add garlic and spices for 1 minute.","Add the mince and brown it well.","Stir in the chopped tomatoes, drained kidney beans and the stock cube with 100 ml water per portion. Simmer for 25 minutes.","Cook the rice while the chilli simmers (brown rice takes about 25 minutes). Serve with a spoonful of yoghurt."]},
+ {id:"dahl",t:"d",tr:1,name:"Red lentil & spinach dahl",m:"veg",time:35,r:4.0,ing:[["lentils",75],["choptom",.5],["onion",70],["garlic",1],["ginger",5],["coconut",.25],["spinach",50],["basmati",70],["spices",1.5],["oil",5]],
+  steps:["Fry the onion in the oil until golden, then add garlic, grated ginger and spices for a minute.","Add the rinsed lentils, chopped tomatoes, coconut milk and 250 ml water per portion.","Simmer for 20–25 minutes, stirring now and then, until the lentils break down. Stir in the spinach to wilt.","Serve with rice."],tip:"Dahl thickens as it cools. Loosen leftovers with a splash of water."},
+ {id:"chickpeacurry",t:"d",tr:1,name:"Chickpea, squash & spinach curry",m:"veg",time:35,r:4.1,ing:[["chickpeas",.5],["squash",.15],["choptom",.5],["onion",70],["spinach",40],["coconut",.25],["currypaste",25],["basmati",70],["garlic",1]],
+  steps:["Fry the onion in a little oil for 5 minutes, then stir in garlic and curry paste for a minute.","Add small cubes of squash, the chopped tomatoes, coconut milk and drained chickpeas. Simmer for 20 minutes until the squash is tender.","Stir through the spinach until wilted and season.","Serve with rice."]},
+ {id:"tunabake",t:"d",tr:1,name:"Tuna, sweetcorn & broccoli pasta bake",m:"fish",time:35,r:3.8,ing:[["wwpasta",90],["tuna",.5],["sweetcorn",.25],["broccoli",.25],["cheddar",25],["passata",125],["onion",40],["herbs",.5]],
+  steps:["Heat the oven to 200°C (180°C fan) and cook the pasta for 2 minutes less than the packet says, adding small broccoli florets for the last 2 minutes.","Soften the onion in a pan, add the passata and herbs and simmer for 5 minutes.","Mix the drained pasta and broccoli, sauce, tuna and sweetcorn in an ovenproof dish and top with grated cheddar.","Bake for 15–20 minutes until bubbling and golden."]},
+ {id:"fajitas",t:"d",tr:1,name:"Black bean & pepper fajitas",m:"veg",time:25,r:4.0,ing:[["wraps",2],["pepper",.75],["redonion",60],["blackbeans",.5],["cheddar",20],["greekyog",30],["tomcherry",50],["spices",1.5],["oil",5]],
+  steps:["Slice the peppers and onion into strips and fry over a high heat for 6–8 minutes until charred at the edges.","Add the spices and drained black beans, lightly crushing a few, and cook for 3 minutes.","Warm the wraps in a dry pan and fill with the veg, chopped tomatoes, grated cheese and a spoonful of yoghurt."]},
+ {id:"sweetjacket",t:"d",tr:1,name:"Sweet potatoes with smoky chilli beans",m:"veg",time:50,r:3.8,ing:[["sweetpot",300],["kidney",.5],["choptom",.5],["onion",50],["cheddar",20],["spices",1],["salad",20]],
+  steps:["Prick the sweet potatoes and bake at 200°C (180°C fan) for 45 minutes, or microwave for 8–10 minutes.","Fry the onion with the spices, add the chopped tomatoes and drained beans, and simmer for 10 minutes.","Split the potatoes, spoon in the beans, top with grated cheese and serve with salad leaves."]},
+ {id:"friedrice",t:"d",tr:1,name:"Veg-packed egg fried rice",m:"veg",time:20,r:3.8,ing:[["basmati",75],["eggs",2],["mixveg",120],["soy",15],["springonion",1],["garlic",1],["ginger",4],["oil",10]],
+  steps:["Cook the rice and spread it out to steam dry (cold leftover rice works best).","Fry the garlic and ginger in the oil, add the frozen veg and cook for 3 minutes.","Push everything to one side, scramble the beaten eggs in the gap, then mix it all together.","Add the rice and soy sauce, stir-fry until piping hot and finish with sliced spring onions."],tip:"Cool cooked rice quickly and keep it in the fridge for no more than a day."},
+ {id:"mushpasta",t:"d",tr:1,name:"Creamy mushroom, kale & garlic pasta",m:"veg",time:20,r:3.9,ing:[["wwpasta",90],["mushroom",100],["kale",40],["grana",15],["milk",80],["garlic",1],["butter",8]],
+  steps:["Cook the pasta, adding the kale for the last 3 minutes.","Fry the sliced mushrooms in the butter until golden, then add garlic for a minute.","Pour in the milk, bring to a simmer and stir in the grated Grana Padano until it thickens slightly.","Toss with the drained pasta and kale, adding pasta water to loosen if needed."]},
+ {id:"casserole",t:"d",tr:1,name:"Sausage & bean casserole",m:"pork",time:45,r:3.9,ing:[["sausage",2],["butterbeans",.5],["choptom",.5],["onion",60],["carrot",60],["pepper",.3],["spices",.5],["herbs",.5],["bread",1]],
+  steps:["Brown the sausages in a large pan, then take them out and cut into chunks.","Soften the onion, diced carrot and pepper in the same pan with the paprika.","Return the sausages with the chopped tomatoes, drained butter beans, herbs and 100 ml water per portion.","Cover and simmer for 25 minutes. Serve with bread for mopping up."]},
+ {id:"shakshuka",t:"d",tr:1,name:"Shakshuka with feta & toast",m:"veg",time:25,r:4.1,ing:[["eggs",2],["choptom",.75],["pepper",.5],["onion",60],["garlic",1],["feta",20],["spinach",30],["bread",2],["spices",1]],
+  steps:["Soften the onion and sliced pepper in a frying pan for 8 minutes, then add garlic and spices.","Pour in the chopped tomatoes and simmer for 8 minutes until thick. Stir in the spinach.","Make small wells and crack in the eggs. Cover and cook gently for 5–6 minutes until the whites set.","Crumble over the feta and serve with toast for dipping."]},
+ {id:"vegchilli",t:"d",tr:1,name:"Lentil & bean veggie chilli",m:"veg",time:40,r:3.9,ing:[["lentils",40],["kidney",.5],["choptom",.5],["onion",60],["pepper",.5],["carrot",50],["basmati",70],["spices",1.5],["greekyog",25]],
+  steps:["Soften the onion, pepper and grated carrot in a little oil for 6 minutes. Add the spices.","Stir in the lentils, chopped tomatoes, drained beans and 150 ml water per portion.","Simmer for 25 minutes until thick, adding water if it catches.","Serve with rice and a spoonful of yoghurt."]},
+ {id:"lentilpie",t:"d",tr:1,name:"Lentil cottage pie with sweet potato mash",m:"veg",time:55,r:4.0,ing:[["lentils",50],["sweetpot",250],["carrot",60],["mushroom",60],["onion",50],["choptom",.25],["stock",.5],["herbs",.5],["peas",50]],
+  steps:["Soften the onion, diced carrot and chopped mushrooms in a little oil for 8 minutes.","Add the lentils, chopped tomatoes, herbs and the stock cube in 200 ml hot water per portion. Simmer for 20 minutes, adding peas at the end.","Meanwhile boil the peeled sweet potato for 12 minutes and mash.","Spoon the filling into a dish, top with mash and bake at 200°C (180°C fan) for 20 minutes."]},
+ {id:"tagine",t:"d",tr:1,name:"Aubergine & chickpea tagine with couscous",m:"veg",time:40,r:4.1,ing:[["aubergine",.4],["chickpeas",.5],["choptom",.5],["onion",50],["harissa",12],["couscous",70],["coriander",.2],["honey",5],["oil",10]],
+  steps:["Fry the diced aubergine in the oil over a high heat until browned, then add the onion for 5 minutes.","Stir in the harissa, then add the chopped tomatoes, drained chickpeas, honey and 100 ml water per portion. Simmer for 20 minutes.","Pour boiling water over the couscous (equal volume), cover for 5 minutes and fluff with a fork.","Serve the tagine on the couscous, scattered with coriander."]},
+ {id:"gnocchi",t:"d",tr:1,name:"Crispy gnocchi with tomatoes, spinach & mozzarella",m:"veg",time:25,r:4.2,ing:[["gnocchi",200],["choptom",.5],["spinach",40],["mozzarella",60],["basil",.25],["garlic",1],["oil",10]],
+  steps:["Fry the gnocchi straight from the pack in the oil for 6–8 minutes, turning, until golden and crisp.","Add garlic for a minute, then the chopped tomatoes. Simmer for 5 minutes and stir in the spinach.","Tear the mozzarella over the top and grill for 3–4 minutes until melted. Finish with basil."],tip:"No need to boil shop-bought gnocchi first. Frying gives a crisp outside and soft middle."},
+ // ---------- dinners: step-up
+ {id:"traybake",t:"d",tr:2,name:"Chicken thigh traybake with roast veg",m:"chicken",time:50,r:4.5,ing:[["chickthigh",250],["babypot",180],["pepper",.5],["redonion",70],["courgette",.5],["lemon",.25],["oil",10],["herbs",.5]],
+  steps:["Heat the oven to 200°C (180°C fan). Halve the potatoes and cut the pepper, courgette and onion into chunks.","Toss the veg with the oil, herbs, lemon zest, salt and pepper in a large roasting tin.","Sit the chicken thighs skin-side up on top and roast for 40–45 minutes until the skin is crisp and the juices run clear. Squeeze over the lemon juice."],tip:"Roast spare thighs alongside and shred the meat for tomorrow's lunch."},
+ {id:"stirfry",t:"d",tr:2,name:"Ginger chicken & veg noodle stir-fry",m:"chicken",time:20,r:4.4,ing:[["chickbreast",125],["noodles",65],["pepper",.5],["carrot",50],["broccoli",.25],["soy",15],["ginger",5],["springonion",1],["garlic",1],["oil",10]],
+  steps:["Cook the noodles for 4 minutes, drain and rinse under cold water.","Stir-fry thin strips of chicken in hot oil for 5–6 minutes until cooked through.","Add sliced pepper, carrot ribbons, small broccoli florets, garlic and grated ginger and cook for 3 minutes.","Toss in the noodles and soy sauce, heat through and finish with spring onions."],tip:"Cut everything before you start. The cooking takes under ten minutes."},
+ {id:"cottagepie",t:"d",tr:2,name:"Cottage pie with greens",m:"beef",time:60,r:4.5,ing:[["mince",110],["potato",250],["carrot",60],["onion",60],["mushroom",40],["stock",.5],["milk",30],["butter",10],["herbs",.5],["finebeans",70]],
+  steps:["Brown the mince in a pan, add the diced onion, carrot and mushroom and cook for 5 minutes.","Add the stock cube dissolved in 150 ml hot water per portion and the herbs. Simmer for 20 minutes.","Meanwhile boil the potatoes and mash with butter and milk.","Spoon the mince into a dish, top with mash and bake at 200°C (180°C fan) for 20 minutes. Serve with steamed green beans."]},
+ {id:"pestochicken",t:"d",tr:2,name:"Chicken pesto pasta with broccoli & tomatoes",m:"chicken",time:20,r:4.4,ing:[["wwpasta",90],["pesto",35],["chickbreast",110],["broccoli",.3],["tomcherry",70],["oil",5]],
   steps:["Cook the pasta, adding the broccoli florets for the last 3 minutes.","Fry bite-size pieces of chicken in the oil for 6–7 minutes until cooked through, adding halved tomatoes for the last 2 minutes.","Drain the pasta and broccoli, keeping a splash of water, and toss with the chicken, tomatoes and pesto."]},
- {id:"friedrice",t:"d",name:"Egg fried rice",m:"veg",time:20,r:3.8,ing:[["rice",80],["eggs",2],["mixveg",100],["soy",15],["onion",40],["garlic",1],["oil",10]],
-  steps:["Cook the rice and spread it out to steam dry (cold leftover rice works best).","Fry the onion and garlic in the oil, add the frozen veg and cook for 3 minutes.","Push everything to one side, scramble the beaten eggs in the gap, then mix it all together.","Add the rice and soy sauce and stir-fry until piping hot."],tip:"Cool cooked rice quickly and keep it in the fridge for no more than a day."},
- {id:"mushpasta",t:"d",name:"Creamy mushroom & spinach pasta",m:"veg",time:20,r:3.9,ing:[["pasta",100],["mushroom",100],["spinach",40],["cheddar",25],["milk",80],["garlic",1],["butter",10]],
-  steps:["Cook the pasta.","Fry the sliced mushrooms in the butter until golden, then add garlic for a minute.","Pour in the milk, bring to a simmer and stir in the grated cheese until it melts. Add the spinach to wilt.","Toss with the drained pasta, adding pasta water to loosen if needed."]},
- {id:"carbonara",t:"d",name:"Bacon & pea carbonara",m:"pork",time:20,r:4.4,ing:[["spaghetti",100],["bacon",50],["eggs",1],["cheddar",25],["peas",50],["garlic",1]],
-  steps:["Cook the spaghetti, adding the peas for the last 2 minutes.","Fry the chopped bacon until crisp, adding garlic for the last minute. Take off the heat.","Beat the eggs with the grated cheese and plenty of black pepper.","Add the drained pasta and peas to the bacon pan off the heat, pour over the egg mix and toss quickly with a splash of pasta water until silky."]},
- {id:"casserole",t:"d",name:"Sausage & bean casserole",m:"pork",time:45,r:4.3,ing:[["sausage",2],["beans",.5],["choptom",.5],["onion",60],["carrot",50],["potato",150],["herbs",.5]],
-  steps:["Brown the sausages in a large pan, then take them out and cut into chunks.","Soften the onion and diced carrot in the same pan, then add small cubes of potato.","Return the sausages with the chopped tomatoes, beans, herbs and 100 ml water per portion.","Cover and simmer for 25–30 minutes until the potatoes are tender."]},
- {id:"chickcurry",t:"d",name:"Chicken tikka-style curry",m:"chicken",time:40,r:4.7,ing:[["chickbreast",125],["currypaste",40],["choptom",.5],["onion",75],["greekyog",40],["rice",75],["spinach",30]],
-  steps:["Fry the onion in a little oil for 6–8 minutes until soft and golden.","Add the diced chicken and curry paste and cook for 5 minutes.","Add the chopped tomatoes and simmer for 15 minutes. Stir in the spinach.","Take off the heat and stir through the yoghurt. Serve with rice."]},
- {id:"fishfingers",t:"d",name:"Fish fingers, wedges & peas",m:"fish",time:35,r:4.1,ing:[["fishfing",4],["potato",250],["peas",80],["oil",10]],
-  steps:["Heat the oven to 220°C (200°C fan). Cut the potatoes into wedges, toss with oil and salt and roast for 30 minutes.","Add the fish fingers for the last 15 minutes, turning halfway.","Cook the peas and serve."]},
- {id:"shakshuka",t:"d",name:"Shakshuka with toast",m:"veg",time:25,r:3.9,ing:[["eggs",2],["choptom",.75],["pepper",.5],["onion",60],["garlic",1],["bread",2],["spices",1]],
-  steps:["Soften the onion and sliced pepper in a frying pan for 8 minutes, then add garlic and spices.","Pour in the chopped tomatoes and simmer for 8 minutes until thick.","Make small wells and crack in the eggs. Cover and cook gently for 5–6 minutes until the whites set.","Serve with toast for dipping."]},
- {id:"vegchilli",t:"d",name:"Lentil & bean veggie chilli",m:"veg",time:40,r:3.8,ing:[["lentils",40],["kidney",.5],["choptom",.5],["onion",60],["pepper",.5],["carrot",50],["rice",75],["spices",1]],
-  steps:["Soften the onion, pepper and grated carrot in a little oil for 6 minutes. Add the spices.","Stir in the lentils, chopped tomatoes, drained beans and 150 ml water per portion.","Simmer for 25 minutes until thick, adding water if it catches.","Serve with rice."]},
- {id:"pestoveg",t:"d",name:"Pesto pasta with roast tomatoes",m:"veg",time:20,r:3.7,ing:[["pasta",100],["pesto",40],["tomcherry",100],["spinach",30],["cheddar",15]],
-  steps:["Roast the cherry tomatoes at 200°C (180°C fan) for 15 minutes until blistered.","Cook the pasta, then toss with the pesto, spinach and a splash of pasta water.","Top with the tomatoes and grated cheese."]},
+ {id:"chickcurry",t:"d",tr:2,name:"Chicken tikka-style curry with spinach",m:"chicken",time:40,r:4.6,ing:[["chickbreast",125],["currypaste",40],["choptom",.5],["onion",75],["greekyog",40],["basmati",70],["spinach",40],["coriander",.2]],
+  steps:["Fry the onion in a little oil for 6–8 minutes until soft and golden.","Add the diced chicken and curry paste and cook for 5 minutes.","Add the chopped tomatoes and simmer for 15 minutes. Stir in the spinach.","Take off the heat, stir through the yoghurt and scatter with coriander. Serve with rice."]},
+ {id:"thaichicken",t:"d",tr:2,name:"Thai red chicken & squash curry",m:"chicken",time:35,r:4.6,ing:[["chickbreast",110],["thaipaste",25],["coconut",.35],["squash",.2],["finebeans",50],["basmati",70],["coriander",.2]],
+  steps:["Fry the curry paste in a little oil for a minute, then add the diced chicken and brown it.","Add small cubes of squash, the coconut milk and 100 ml water per portion. Simmer for 15 minutes.","Add the halved green beans for the last 5 minutes.","Serve with rice, scattered with coriander."]},
+ {id:"shawarma",t:"d",tr:2,name:"Chicken shawarma pittas with houmous & salad",m:"chicken",time:30,r:4.7,ing:[["chickbreast",125],["pitta",1.5],["hummus",40],["salad",30],["tomcherry",60],["redonion",30],["cucumber",.2],["greekyog",30],["lemon",.25],["spices",1.5],["oil",5]],
+  steps:["Toss thin strips of chicken with the spices, oil and a squeeze of lemon. Leave for 10 minutes if you can.","Fry over a high heat for 6–8 minutes until charred and cooked through.","Warm the pittas, spread with houmous and fill with chicken, salad, tomatoes, cucumber and thinly sliced red onion.","Finish with a spoonful of yoghurt."]},
+ {id:"porkpaprika",t:"d",tr:2,name:"Paprika pork with sweet potato mash & kale",m:"pork",time:35,r:4.5,ing:[["porkloin",130],["sweetpot",250],["kale",50],["garlic",1],["spices",1],["oil",8],["greekyog",20]],
+  steps:["Boil the peeled, chunked sweet potato for 12 minutes, drain and mash with the yoghurt.","Rub the pork with paprika, salt and oil and fry for 4–5 minutes each side until cooked through. Rest for 3 minutes.","In the same pan, fry the garlic and kale with a splash of water for 3 minutes.","Slice the pork and serve on the mash with the kale."]},
+ {id:"halloumi",t:"d",tr:2,name:"Halloumi, roast veg & lemony couscous",m:"veg",time:35,r:4.6,ing:[["halloumi",75],["courgette",.5],["pepper",.5],["redonion",50],["couscous",70],["lemon",.25],["tomcherry",60],["oil",10],["herbs",.5]],
+  steps:["Roast the chunked courgette, pepper, red onion and tomatoes with the oil and herbs at 200°C (180°C fan) for 25 minutes.","Pour boiling water over the couscous (equal volume), cover for 5 minutes, then fluff with lemon zest and juice.","Fry slices of halloumi in a dry pan for 1–2 minutes each side until golden.","Fold the roast veg through the couscous and top with halloumi."]},
+ {id:"squashpasta",t:"d",tr:2,name:"Roast squash, kale & feta pasta with walnuts",m:"veg",time:40,r:4.4,ing:[["squash",.3],["wwpasta",90],["kale",35],["feta",35],["walnuts",12],["garlic",1],["spices",.5],["oil",10]],
+  steps:["Roast cubes of squash with the oil and chilli flakes at 200°C (180°C fan) for 25 minutes until soft and caramelised.","Cook the pasta, adding the kale and garlic for the last 3 minutes.","Drain, keeping a splash of water, and toss with the squash, crushing some of it into a sauce.","Top with crumbled feta and toasted walnuts."]},
+ {id:"tofu",t:"d",tr:2,name:"Sticky ginger tofu & veg noodles",m:"veg",time:25,r:4.3,ing:[["tofu",110],["noodles",65],["broccoli",.25],["pepper",.5],["ginger",6],["soy",20],["honey",8],["springonion",1],["garlic",1],["oil",10]],
+  steps:["Press the tofu between kitchen paper, cut into cubes and fry in the oil until golden on all sides.","Add the honey, soy, grated ginger and garlic and toss until sticky. Set aside.","Stir-fry the broccoli and sliced pepper for 3 minutes, then add the cooked noodles.","Return the tofu, toss everything together and finish with spring onions."]},
+ {id:"tacos",t:"d",tr:2,name:"Black bean tacos with avocado & charred corn",m:"veg",time:25,r:4.4,ing:[["wraps",2],["blackbeans",.5],["avocado",.5],["sweetcorn",.3],["redonion",30],["tomcherry",50],["coriander",.2],["greekyog",30],["lemon",.2],["spices",1]],
+  steps:["Char the drained sweetcorn in a dry pan, then add the black beans and spices with a splash of water and warm through.","Mash the avocado with lemon juice and a pinch of salt.","Chop the tomatoes and red onion with the coriander for a quick salsa.","Warm the wraps, cut in half and fill with beans, avocado, salsa and yoghurt."]},
+ {id:"carbonara",t:"d",tr:2,name:"Bacon, pea & spinach carbonara",m:"pork",time:20,r:4.3,ing:[["spaghetti",90],["bacon",45],["eggs",1],["grana",20],["peas",50],["spinach",30],["garlic",1]],
+  steps:["Cook the spaghetti, adding the peas for the last 2 minutes.","Fry the chopped bacon until crisp, adding garlic and spinach for the last minute. Take off the heat.","Beat the eggs with the grated Grana Padano and plenty of black pepper.","Add the drained pasta and peas to the bacon pan off the heat, pour over the egg mix and toss quickly with a splash of pasta water until silky."]},
+ // ---------- dinners: treats
+ {id:"salmonsoy",t:"d",tr:3,name:"Honey-soy salmon with greens & rice",m:"fish",time:25,r:5.0,ing:[["salmon",120],["basmati",70],["broccoli",.3],["finebeans",50],["soy",15],["honey",8],["ginger",5],["garlic",1],["springonion",1]],
+  steps:["Mix the soy, honey, grated ginger and garlic. Spoon half over the salmon.","Bake the salmon at 200°C (180°C fan) for 12–15 minutes until it flakes easily.","Steam or boil the broccoli and green beans for 4 minutes.","Serve on rice, spoon over the remaining sauce and scatter with spring onions."]},
+ {id:"salmontray",t:"d",tr:3,name:"Lemon & herb salmon with new potatoes",m:"fish",time:35,r:4.9,ing:[["salmon",120],["babypot",180],["finebeans",60],["tomcherry",60],["lemon",.25],["herbs",.5],["oil",10]],
+  steps:["Heat the oven to 200°C (180°C fan). Halve the potatoes, toss with half the oil and roast for 20 minutes.","Add the green beans and tomatoes to the tray, sit the salmon on top and drizzle with the rest of the oil, herbs and lemon zest.","Roast for 12–15 minutes more until the salmon flakes easily. Squeeze over the lemon juice to serve."]},
+ {id:"prawncurry",t:"d",tr:3,name:"Thai red king prawn curry",m:"fish",time:25,r:4.9,ing:[["prawns",90],["thaipaste",25],["coconut",.35],["pepper",.5],["finebeans",50],["basmati",70],["coriander",.2],["lemon",.15]],
+  steps:["Fry the curry paste in a little oil for a minute, then add the sliced pepper for 3 minutes.","Pour in the coconut milk and 50 ml water per portion and simmer for 5 minutes, adding the halved beans.","Add the prawns and cook for 3–4 minutes until pink all the way through.","Finish with a squeeze of lemon and coriander, and serve with rice."]},
+ {id:"prawnpasta",t:"d",tr:3,name:"Chilli & garlic king prawn spaghetti",m:"fish",time:20,r:4.9,ing:[["spaghetti",90],["prawns",90],["chilli",8],["garlic",2],["tomcherry",80],["lemon",.25],["spinach",30],["oil",15]],
+  steps:["Cook the spaghetti.","Gently fry the sliced garlic and chilli in the oil for 1 minute, then add halved tomatoes and cook until they soften.","Add the prawns and cook for 3 minutes until pink. Stir in the spinach.","Toss with the drained spaghetti, lemon zest and juice and a splash of pasta water."]},
+ {id:"codchorizo",t:"d",tr:3,name:"Cod with chorizo, butter beans & tomatoes",m:"fish",time:30,r:4.9,ing:[["cod",120],["chorizo",25],["butterbeans",.5],["choptom",.5],["spinach",40],["garlic",1],["redonion",50],["lemon",.2]],
+  steps:["Fry the diced chorizo in a dry pan until it releases its oil, then add the red onion and garlic for 4 minutes.","Add the chopped tomatoes and drained butter beans and simmer for 8 minutes. Stir in the spinach.","Nestle the defrosted cod into the sauce, cover and cook gently for 8–10 minutes until it flakes.","Finish with a squeeze of lemon."]},
+ {id:"lambkofta",t:"d",tr:3,name:"Lamb koftas with couscous, tzatziki & salad",m:"lamb",time:35,r:4.9,ing:[["lambmince",110],["couscous",70],["greekyog",50],["cucumber",.3],["redonion",40],["tomcherry",60],["lemon",.25],["spices",1.5],["garlic",1]],
+  steps:["Mix the lamb with the spices, half the garlic, a little grated onion and salt. Shape into sausages around skewers or by hand.","Grill or fry the koftas for 10–12 minutes, turning, until cooked through.","Stir grated cucumber, the rest of the garlic and lemon juice into the yoghurt for tzatziki.","Serve with couscous, chopped tomatoes and red onion."]},
+ {id:"moussaka",t:"d",tr:3,name:"Lamb & aubergine moussaka bake",m:"lamb",time:70,r:4.8,ing:[["lambmince",110],["aubergine",.5],["choptom",.5],["onion",60],["garlic",1],["greekyog",60],["eggs",.5],["grana",15],["spices",1],["oil",10],["salad",25]],
+  steps:["Slice the aubergine, brush with oil and roast at 200°C (180°C fan) for 20 minutes until soft.","Brown the lamb with the onion, garlic and cinnamon or cumin. Add the chopped tomatoes and simmer for 15 minutes.","Layer the lamb and aubergine in a dish. Beat the yoghurt with the egg and half the cheese and spread over the top.","Sprinkle with the remaining cheese and bake for 25 minutes until golden. Serve with salad."]},
+ {id:"steak",t:"d",tr:3,name:"Rump steak with garlic mushrooms & roast potatoes",m:"beef",time:40,r:5.2,ing:[["steak",150],["babypot",200],["mushroom",80],["salad",30],["garlic",1],["butter",10],["oil",10]],
+  steps:["Roast the halved potatoes with the oil at 200°C (180°C fan) for 35 minutes until crisp.","Take the steak out of the fridge 20 minutes before cooking and season well.","Fry the steak in a very hot pan for 2–3 minutes each side for medium-rare. Rest for 5 minutes.","In the same pan, fry the mushrooms with the butter and garlic. Serve with the potatoes and salad."]},
+ {id:"chorizochicken",t:"d",tr:3,name:"Chicken, chorizo & butter bean stew",m:"chicken",time:50,r:4.8,ing:[["chickthigh",250],["chorizo",20],["butterbeans",.5],["choptom",.5],["pepper",.5],["onion",50],["garlic",1],["kale",30],["spices",1]],
+  steps:["Brown the chicken thighs skin-side down in a large pan, then set aside.","Fry the chorizo, onion, pepper and garlic in the fat for 5 minutes. Add the paprika.","Add the chopped tomatoes, drained butter beans and 100 ml water per portion. Sit the chicken on top.","Simmer, partly covered, for 30 minutes. Stir in the kale for the last 5 minutes."]},
+ {id:"harissachicken",t:"d",tr:3,name:"Harissa chicken with roast veg couscous",m:"chicken",time:45,r:4.8,ing:[["chickthigh",250],["harissa",15],["courgette",.5],["redonion",50],["couscous",70],["greekyog",30],["lemon",.25],["coriander",.15],["oil",10]],
+  steps:["Rub the chicken thighs with the harissa and a little oil.","Roast with the chunked courgette and red onion at 200°C (180°C fan) for 40 minutes.","Make the couscous with boiling water and lemon juice, then fold through the roast veg.","Serve with the chicken, a spoonful of yoghurt and coriander."]},
 
- {id:"cheesesand",t:"l",name:"Cheese & tomato sandwich, apple",m:"veg",time:5,r:3.2,ing:[["bread",2],["cheddar",30],["tomcherry",50],["apple",1],["butter",8]],steps:["Butter the bread, add sliced cheese and halved tomatoes.","Pack with an apple."]},
- {id:"tunawrap",t:"l",name:"Tuna & sweetcorn wrap",m:"fish",time:5,r:3.7,ing:[["wraps",1],["tuna",.5],["sweetcorn",.2],["mayo",15],["cucumber",.2]],steps:["Mix the drained tuna with sweetcorn and mayonnaise.","Fill the wrap with the tuna and sliced cucumber and roll up tightly."]},
- {id:"carrotsoup",t:"l",name:"Carrot & lentil soup with bread",m:"veg",time:30,r:3.6,ing:[["lentils",40],["carrot",150],["onion",50],["stock",.5],["bread",2],["spices",.5]],steps:["Soften the onion in a little oil, then add the grated carrot, lentils and cumin.","Pour in the stock cube dissolved in 350 ml hot water per portion and simmer for 20 minutes.","Blend until smooth (or leave chunky) and serve with bread."],tip:"Make the whole week's soup in one pan on Sunday and keep portions in the fridge for up to three days."},
- {id:"jacketbeans",t:"l",name:"Jacket potato, beans & cheese",m:"veg",time:12,r:3.6,ing:[["potato",300],["beans",.5],["cheddar",25],["butter",8]],steps:["Prick the potato and microwave for 8–10 minutes, turning halfway, until soft.","Heat the beans, split the potato, add butter, beans and grated cheese."]},
- {id:"eggmayo",t:"l",name:"Egg mayo sandwich",m:"veg",time:12,r:3.3,ing:[["eggs",2],["bread",2],["mayo",15],["cucumber",.15]],steps:["Hard-boil the eggs for 9 minutes, cool in cold water and peel.","Mash with mayonnaise, salt and pepper and sandwich with sliced cucumber."]},
- {id:"pastasalad",t:"l",name:"Pesto pasta salad",m:"veg",time:15,r:3.5,ing:[["pasta",75],["pesto",25],["tomcherry",60],["cucumber",.2]],steps:["Cook the pasta, rinse under cold water and drain well.","Toss with pesto, halved tomatoes and diced cucumber. Keeps in the fridge for two days."]},
- {id:"beanstoast",t:"l",name:"Beans on toast",m:"veg",time:5,r:3.0,ing:[["beans",.5],["bread",2],["butter",8]],steps:["Heat the beans.","Toast and butter the bread, and pour the beans over."]},
- {id:"chickwrap",t:"l",name:"Chicken, yoghurt & cucumber wrap",m:"chicken",time:15,r:4.0,ing:[["wraps",1],["chickbreast",75],["greekyog",30],["cucumber",.2],["tomcherry",40],["oil",5]],steps:["Fry thin strips of chicken in oil for 6 minutes until cooked through, and season well.","Spread the wrap with yoghurt, add the chicken, cucumber and tomatoes, and roll."]},
- {id:"tomsoup",t:"l",name:"Tomato soup & cheese toastie",m:"veg",time:20,r:3.8,ing:[["passata",250],["onion",40],["stock",.25],["bread",2],["cheddar",25],["butter",8]],steps:["Soften the onion, add the passata and stock cube with 100 ml water per portion and simmer for 10 minutes.","Butter the outside of the bread, fill with cheese and fry in a dry pan for 3 minutes each side."]},
- {id:"baconsand",t:"l",name:"Bacon & tomato sandwich",m:"pork",time:10,r:3.9,ing:[["bread",2],["bacon",50],["tomcherry",50]],steps:["Grill the bacon until crisp.","Sandwich with sliced tomatoes."]},
+ // ---------- lunches
+ {id:"cheesesand",t:"l",tr:1,name:"Cheese, tomato & salad sandwich, apple",m:"veg",time:5,r:3.2,ing:[["bread",2],["cheddar",30],["tomcherry",50],["salad",15],["apple",1],["butter",6]],steps:["Butter the bread, add sliced cheese, halved tomatoes and salad leaves.","Pack with an apple."]},
+ {id:"tunawrap",t:"l",tr:1,name:"Tuna, sweetcorn & cucumber wrap",m:"fish",time:5,r:3.6,ing:[["wraps",1],["tuna",.5],["sweetcorn",.2],["mayo",15],["cucumber",.2],["salad",15]],steps:["Mix the drained tuna with sweetcorn and mayonnaise.","Fill the wrap with the tuna, sliced cucumber and salad and roll up tightly."]},
+ {id:"carrotsoup",t:"l",tr:1,name:"Carrot & lentil soup with bread",m:"veg",time:30,r:3.6,ing:[["lentils",40],["carrot",150],["onion",50],["stock",.5],["bread",2],["spices",.5]],steps:["Soften the onion in a little oil, then add the grated carrot, lentils and cumin.","Pour in the stock cube dissolved in 350 ml hot water per portion and simmer for 20 minutes.","Blend until smooth (or leave chunky) and serve with bread."],tip:"Make the week's soup in one pan on Sunday and keep portions in the fridge for up to three days."},
+ {id:"squashsoup",t:"l",tr:1,name:"Spiced butternut squash soup",m:"veg",time:35,r:3.8,ing:[["squash",.35],["onion",50],["stock",.5],["bread",2],["spices",.5],["greekyog",15]],steps:["Roast or simmer chunks of peeled squash with the onion and spices until soft.","Add the stock cube in 300 ml hot water per portion and blend until smooth.","Swirl through a little yoghurt and serve with bread."]},
+ {id:"jacketbeans",t:"l",tr:1,name:"Jacket potato, beans & cheese",m:"veg",time:12,r:3.5,ing:[["potato",300],["beans",.5],["cheddar",25],["salad",15]],steps:["Prick the potato and microwave for 8–10 minutes, turning halfway, until soft.","Heat the beans, split the potato, and add the beans, grated cheese and a handful of salad."]},
+ {id:"eggmayo",t:"l",tr:1,name:"Egg & cress-style salad sandwich",m:"veg",time:12,r:3.3,ing:[["eggs",2],["bread",2],["mayo",12],["cucumber",.15],["salad",15]],steps:["Hard-boil the eggs for 9 minutes, cool in cold water and peel.","Mash with mayonnaise, salt and pepper and sandwich with sliced cucumber and salad."]},
+ {id:"pastasalad",t:"l",tr:1,name:"Pesto pasta salad with tomatoes & spinach",m:"veg",time:15,r:3.6,ing:[["wwpasta",70],["pesto",25],["tomcherry",70],["cucumber",.2],["spinach",20]],steps:["Cook the pasta, rinse under cold water and drain well.","Toss with pesto, halved tomatoes, diced cucumber and spinach. Keeps in the fridge for two days."]},
+ {id:"mackereltoast",t:"l",tr:1,name:"Mackerel on toast with tomato salad",m:"fish",time:5,r:3.6,ing:[["mackerel",.75],["bread",2],["tomcherry",60],["salad",20],["lemon",.1]],steps:["Toast the bread.","Pile on the mackerel and its sauce and season with black pepper and lemon.","Serve with halved tomatoes and salad leaves."],tip:"Oily fish twice a week is the NHS recommendation. Tinned mackerel is the cheapest way to do it."},
+ {id:"hummuswrap",t:"l",tr:1,name:"Houmous & crunchy veg wrap",m:"veg",time:8,r:3.6,ing:[["wraps",1],["hummus",40],["carrot",50],["pepper",.3],["cucumber",.2],["salad",15]],steps:["Spread the wrap with houmous.","Add grated carrot, sliced pepper, cucumber and salad leaves and roll tightly."]},
+ {id:"tomsoup",t:"l",tr:1,name:"Roast tomato soup & cheese toastie",m:"veg",time:20,r:3.8,ing:[["passata",250],["onion",40],["stock",.25],["bread",2],["cheddar",25],["butter",8],["basil",.15]],steps:["Soften the onion, add the passata and stock cube with 100 ml water per portion and simmer for 10 minutes. Stir in torn basil.","Butter the outside of the bread, fill with cheese and fry in a dry pan for 3 minutes each side."]},
+ {id:"chickwrap",t:"l",tr:2,name:"Chicken, yoghurt & cucumber wrap",m:"chicken",time:15,r:4.0,ing:[["wraps",1],["chickbreast",75],["greekyog",30],["cucumber",.2],["tomcherry",40],["salad",15],["oil",5]],steps:["Fry thin strips of chicken in oil for 6 minutes until cooked through, and season well.","Spread the wrap with yoghurt, add the chicken, cucumber, tomatoes and salad, and roll."]},
+ {id:"greeksalad",t:"l",tr:2,name:"Greek salad with feta & warm pitta",m:"veg",time:10,r:4.0,ing:[["feta",40],["cucumber",.3],["tomcherry",80],["redonion",20],["pepper",.25],["pitta",1],["oil",8],["herbs",.25]],steps:["Chop the cucumber, tomatoes, pepper and red onion into chunks.","Top with crumbled feta, the oil and oregano or mixed herbs.","Serve with warm pitta."]},
+ {id:"quinoasalad",t:"l",tr:2,name:"Quinoa, roast squash & feta salad",m:"veg",time:30,r:4.1,ing:[["quinoa",50],["squash",.2],["feta",30],["spinach",30],["lemon",.15],["walnuts",10],["oil",8]],steps:["Roast cubes of squash at 200°C (180°C fan) for 25 minutes. Cook the quinoa for 12–15 minutes and drain.","Toss the quinoa with spinach, lemon juice and oil.","Top with the squash, crumbled feta and walnuts. Keeps in the fridge for two days."]},
+ {id:"halloumipitta",t:"l",tr:2,name:"Halloumi & houmous pitta",m:"veg",time:10,r:4.1,ing:[["halloumi",50],["pitta",1],["hummus",30],["salad",15],["tomcherry",40]],steps:["Fry slices of halloumi in a dry pan until golden.","Warm the pitta, spread with houmous and stuff with halloumi, salad and tomatoes."]},
+ {id:"chickavo",t:"l",tr:3,name:"Chicken, avocado & tomato salad",m:"chicken",time:15,r:4.3,ing:[["chickbreast",90],["avocado",.5],["salad",40],["tomcherry",60],["cucumber",.2],["lemon",.2],["oil",8]],steps:["Fry or grill the chicken until cooked through, then slice.","Toss the salad, tomatoes and cucumber with lemon juice and oil.","Top with sliced avocado and the chicken."]},
+ {id:"prawnwrap",t:"l",tr:3,name:"King prawn, avocado & lemon wrap",m:"fish",time:10,r:4.3,ing:[["prawns",60],["avocado",.3],["wraps",1],["salad",15],["greekyog",20],["lemon",.15],["spices",.25]],steps:["Fry the prawns with a pinch of paprika for 3 minutes until pink all the way through. Cool.","Mix the yoghurt with lemon juice.","Fill the wrap with salad, sliced avocado, prawns and the lemon yoghurt."]},
 
- {id:"porridge",t:"b",name:"Porridge with banana",m:"veg",time:5,r:3.5,ing:[["oats",50],["milk",200],["banana",1]],steps:["Microwave the oats and milk for 2–3 minutes, stirring halfway.","Top with sliced banana."]},
- {id:"pbtoast",t:"b",name:"Peanut butter toast & banana",m:"veg",time:5,r:3.5,ing:[["bread",2],["pb",20],["banana",1]],steps:["Toast the bread and spread with peanut butter.","Top with sliced banana."]},
- {id:"yogoats",t:"b",name:"Yoghurt, oats & apple",m:"veg",time:3,r:3.4,ing:[["greekyog",150],["oats",30],["apple",.5],["honey",10]],steps:["Spoon the yoghurt into a bowl.","Top with oats, grated or chopped apple and a drizzle of honey."]},
- {id:"eggstoast",t:"b",name:"Scrambled eggs on toast",m:"veg",time:10,r:3.9,ing:[["eggs",2],["bread",2],["butter",8],["milk",20]],steps:["Beat the eggs with the milk and a pinch of salt.","Cook gently in a little butter, stirring, until just set.","Serve on buttered toast."]},
- {id:"cornflakes",t:"b",name:"Corn flakes & banana",m:"veg",time:2,r:3.0,ing:[["cornflakes",40],["milk",150],["banana",.5]],steps:["Pour the cereal and milk, and slice half a banana over."]},
- {id:"overnight",t:"b",name:"Overnight oats with apple",m:"veg",time:5,r:3.5,ing:[["oats",50],["milk",150],["greekyog",50],["apple",.5]],steps:["The night before, stir the oats, milk and yoghurt together in a jar or bowl.","Chill overnight and top with chopped apple in the morning."]}
+ // ---------- breakfasts
+ {id:"porridge",t:"b",tr:1,name:"Porridge with banana",m:"veg",time:5,r:3.5,ing:[["oats",50],["milk",200],["banana",1]],steps:["Microwave the oats and milk for 2–3 minutes, stirring halfway.","Top with sliced banana."]},
+ {id:"berryporridge",t:"b",tr:1,name:"Berry porridge with peanut butter",m:"veg",time:6,r:3.8,ing:[["oats",50],["milk",200],["berries",60],["pb",10]],steps:["Microwave the oats, milk and frozen berries for 3 minutes, stirring halfway.","Swirl through the peanut butter."]},
+ {id:"pbtoast",t:"b",tr:1,name:"Peanut butter toast & banana",m:"veg",time:5,r:3.4,ing:[["bread",2],["pb",20],["banana",1]],steps:["Toast the bread and spread with peanut butter.","Top with sliced banana."]},
+ {id:"yogoats",t:"b",tr:1,name:"Yoghurt, oats & apple",m:"veg",time:3,r:3.4,ing:[["greekyog",150],["oats",30],["apple",.5],["honey",8]],steps:["Spoon the yoghurt into a bowl.","Top with oats, grated or chopped apple and a drizzle of honey."]},
+ {id:"overnight",t:"b",tr:1,name:"Overnight oats with apple",m:"veg",time:5,r:3.5,ing:[["oats",50],["milk",150],["greekyog",50],["apple",.5]],steps:["The night before, stir the oats, milk and yoghurt together in a jar or bowl.","Chill overnight and top with chopped apple in the morning."]},
+ {id:"eggstoast",t:"b",tr:1,name:"Scrambled eggs on toast",m:"veg",time:10,r:3.8,ing:[["eggs",2],["bread",2],["butter",6],["milk",20],["tomcherry",40]],steps:["Beat the eggs with the milk and a pinch of salt.","Cook gently in a little butter, stirring, until just set.","Serve on toast with halved tomatoes."]},
+ {id:"granolabowl",t:"b",tr:2,name:"Greek yoghurt, berries & granola",m:"veg",time:3,r:3.9,ing:[["greekyog",150],["granola",40],["berries",70]],steps:["Defrost the berries overnight in the fridge or for a minute in the microwave.","Layer with yoghurt and granola."]},
+ {id:"omelette",t:"b",tr:2,name:"Spinach & feta omelette",m:"veg",time:10,r:4.0,ing:[["eggs",2],["spinach",30],["feta",20],["tomcherry",40],["bread",1],["oil",5]],steps:["Wilt the spinach in the oil, then pour in the beaten eggs.","Cook until almost set, scatter over the feta and halved tomatoes, fold and serve with toast."]},
+ {id:"pancakes",t:"b",tr:2,name:"Banana oat pancakes with berries",m:"veg",time:15,r:4.1,ing:[["oats",40],["banana",1],["eggs",1],["milk",40],["greekyog",50],["berries",50],["oil",5]],steps:["Blend the oats, banana, egg and milk into a batter.","Fry spoonfuls in a lightly oiled pan for 2 minutes each side.","Serve with yoghurt and warm berries."]},
+ {id:"avotoast",t:"b",tr:3,name:"Avocado & poached egg on toast",m:"veg",time:10,r:4.3,ing:[["avocado",.5],["eggs",1],["bread",2],["chilli",3],["lemon",.1]],steps:["Poach the egg in barely simmering water for 3 minutes.","Mash the avocado with lemon juice, salt and chopped chilli and spread on toast.","Top with the egg."]}
 ];
 const R = Object.fromEntries(RECIPES.map(r => [r.id, r]));
 const DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
 const MEALS = [["b","Breakfast"],["l","Lunch"],["d","Dinner"]];
 const MEAL_NAME = Object.fromEntries(MEALS);
-const PROTEIN = {beef:"Beef",chicken:"Chicken",pork:"Pork",fish:"Fish",veg:"Vegetarian"};
+const PROTEIN = {beef:"Beef",lamb:"Lamb",chicken:"Chicken",pork:"Pork",fish:"Fish",veg:"Vegetarian"};
+const TIER = {1:"Everyday",2:"Step-up",3:"Treat"};
+const PORK = new Set(["sausage","bacon","chorizo","porkloin"]);
+const FISH = new Set(["salmon","cod","prawns","tuna","mackerel"]);
+for (const r of RECIPES) {
+  r.hasMeat = r.ing.some(([id]) => ING[id].a === "meat");
+  r.hasPork = r.ing.some(([id]) => PORK.has(id));
+  r.hasFish = r.ing.some(([id]) => FISH.has(id));
+  r.fv = r.ing.reduce((s, [id, q]) => s + (ING[id].fv ? q * ING[id].fv / 80 : 0), 0); // 5-a-day portions per serving
+}
 const DIET_NAME = {any:"",nopork:"no pork",pesc:"pescatarian",veg:"vegetarian"};
 
 /* ------------------------------------------------------------------ state */
@@ -675,7 +789,7 @@ function qtyText(id, q){
   const g = ING[id];
   if (g.u === "each") {
     const unit = g.un;
-    if (unit === "tsp") return frac(q) + " tsp";
+    if (unit === "tsp") return frac(q) + " tsp " + g.s;
     if (!unit) return frac(q) + " " + plural(g.s, q);
     return frac(q) + " " + plural(unit, q) + (g.s ? " " + g.s : "");
   }
@@ -690,6 +804,7 @@ function ingLine(id, q){
   return {name: g.s.charAt(0).toUpperCase() + g.s.slice(1), amt: qtyText(id, q)};
 }
 const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+const fiveText = n => n < .2 ? "" : frac(Math.round(n * 2) / 2 || .5) + " of 5 a day";
 function weekStart(){
   const d = new Date(); d.setHours(0,0,0,0);
   const dow = (d.getDay() + 6) % 7; // Monday = 0
@@ -697,7 +812,7 @@ function weekStart(){
   return d;
 }
 const fmtDate = (d, o) => d.toLocaleDateString("en-GB", o);
-const dietOK = r => S.diet === "any" ? true : S.diet === "veg" ? r.m === "veg" : S.diet === "pesc" ? (r.m === "veg" || r.m === "fish") : r.m !== "pork";
+const dietOK = r => S.diet === "any" ? true : S.diet === "veg" ? !r.hasMeat && !r.hasFish : S.diet === "pesc" ? !r.hasMeat : !r.hasPork;
 const allowed = r => dietOK(r) && !S.banMeal[r.id] && !r.ing.some(([id]) => S.banIng[id]);
 function activeSlots(){ const out = []; for (let d = 0; d < 7; d++) for (const [m] of MEALS) if (S.meals[m]) out.push(d + "-" + m); return out; }
 const costed = id => !S.have[id] && !(ING[id].st && S.pantry);
@@ -720,15 +835,19 @@ function evaluate(plan, slots){
 }
 function score(plan, slots){
   const e = evaluate(plan, slots);
-  let s = e.waste * 1.6 + e.cost * 0.12;
+  // Spend the budget on food you actually eat: falling short of ~94% of the budget in eaten value costs points,
+  // so a bigger budget pulls in step-up and treat meals rather than leaving money unspent.
+  let s = e.waste * 1.6;
   const over = e.cost - S.budget;
   if (over > 0) s += 60 + over * 40;
+  const target = S.budget * 0.94;
+  if (e.eaten < target) s += (target - e.eaten) * 0.85;
   const counts = {};
   for (const k of slots) {
     const id = plan[k], r = R[id]; if (!r) continue;
-    s -= r.r * (r.t === "d" ? 1 : .55);
+    s -= (r.r + Math.min(r.fv, 3) * .3) * (r.t === "d" ? 1 : .55);
     const c = (counts[id] = (counts[id] || 0) + 1);
-    if (r.t === "d") { if (c === 2) s += 2.2; if (c > 2) s += 30; }
+    if (r.t === "d") { if (c === 2) s += 4.5; if (c > 2) s += 30; }
     else if (r.t === "l") { if (c > 1) s += .9; if (c > 3) s += 12; }
     else { if (c > 1) s += .25; if (c > 4) s += 4; }
     const d = +k[0];
@@ -739,24 +858,43 @@ function score(plan, slots){
 function optimise(fixed){
   const slots = activeSlots();
   const pools = {}; for (const [m] of MEALS) pools[m] = RECIPES.filter(r => r.t === m && allowed(r)).map(r => r.id);
-  const free = slots.filter(k => !(k in fixed));
-  let best = null, bestS = Infinity;
-  if (!free.length) return Object.assign({}, fixed);
-  for (let run = 0; run < 4; run++) {
-    const plan = Object.assign({}, fixed);
-    for (const k of free) { const p = pools[k[2]]; plan[k] = p.length ? p[Math.random() * p.length | 0] : "skip"; }
-    let cur = score(plan, slots), T = 4;
-    if (cur < bestS) { bestS = cur; best = Object.assign({}, plan); }
-    for (let i = 0; i < 3000; i++) {
-      const k = free[Math.random() * free.length | 0], p = pools[k[2]];
-      if (p.length < 2) continue;
-      const old = plan[k]; plan[k] = p[Math.random() * p.length | 0];
-      if (plan[k] === old) continue;
-      const ns = score(plan, slots);
-      if (ns <= cur || Math.random() < Math.exp((cur - ns) / T)) { cur = ns; if (cur < bestS) { bestS = cur; best = Object.assign({}, plan); } }
-      else plan[k] = old;
-      T *= .9985;
+  const free = slots.filter(k => !(k in fixed) && pools[k[2]].length);
+  const plan0 = Object.assign({}, fixed);
+  for (const k of slots) if (!(k in plan0) && !pools[k[2]].length) plan0[k] = "skip";
+  if (!free.length) return plan0;
+  const pick = k => { const p = pools[k[2]]; return p[Math.random() * p.length | 0]; };
+  // Greedy polish: try every alternative in every open slot, keep improvements, repeat until stable.
+  const polish = (plan, sc) => {
+    for (let pass = 0, improved = true; improved && pass < 10; pass++) {
+      improved = false;
+      for (const k of free) {
+        const old = plan[k];
+        let bestId = old, bestSc = sc;
+        for (const id of pools[k[2]]) { if (id === old) continue; plan[k] = id; const ns = score(plan, slots); if (ns < bestSc - 1e-9) { bestSc = ns; bestId = id; } }
+        plan[k] = bestId; if (bestId !== old) { sc = bestSc; improved = true; }
+      }
     }
+    return sc;
+  };
+  const anneal = (plan, sc, iters, T) => {
+    for (let i = 0; i < iters; i++, T *= .9985) {
+      const k = free[Math.random() * free.length | 0], old = plan[k];
+      plan[k] = pick(k); if (plan[k] === old) continue;
+      const ns = score(plan, slots);
+      if (ns <= sc || Math.random() < Math.exp((sc - ns) / T)) sc = ns; else plan[k] = old;
+    }
+    return sc;
+  };
+  // Iterated local search: anneal + polish, then repeatedly shake part of the best plan and search again.
+  let best = null, bestS = Infinity;
+  const t0 = performance.now();
+  for (let run = 0; run < 14 && (run < 4 || performance.now() - t0 < 700); run++) {
+    const plan = Object.assign({}, best || plan0);
+    if (!best || run % 5 === 0) for (const k of free) plan[k] = pick(k);
+    else for (const k of free) if (Math.random() < .3) plan[k] = pick(k);
+    let sc = anneal(plan, score(plan, slots), 1800, best ? 2.5 : 5);
+    sc = polish(plan, sc);
+    if (sc < bestS) { bestS = sc; best = plan; }
   }
   return best;
 }
@@ -778,6 +916,17 @@ function generate(opts){
   save();
 }
 let changed = new Set();
+// Show a planning state, let the browser paint it, then do the (up to ~0.7 s) search.
+function replan(after, opts){
+  const btn = $("#regenBtn");
+  btn.classList.add("busy"); btn.setAttribute("aria-busy", "true");
+  document.body.classList.add("planning");
+  setTimeout(() => {
+    generate(opts); render();
+    btn.classList.remove("busy"); btn.removeAttribute("aria-busy"); document.body.classList.remove("planning");
+    after && after();
+  }, 30);
+}
 
 /* ------------------------------------------------------------------ shopping */
 function shopping(){
@@ -807,6 +956,7 @@ const ICON = {
   ban:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg>',
   nope:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 14V2"/><path d="M9 18.1 10 14H4.2a2 2 0 0 1-1.9-2.5l2.3-8A2 2 0 0 1 6.5 2H17a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.8a2 2 0 0 0-1.7 1L9.7 22a3 3 0 0 1-.7-3.9z"/></svg>',
   eye:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7c2 0 3.7.6 5.1 1.5M22 12s-3.5 7-10 7c-2 0-3.7-.6-5.1-1.5"/><path d="M3 3l18 18"/></svg>',
+  info:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/></svg>',
   clock:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'
 };
 let TAB = "week";
@@ -833,9 +983,7 @@ function renderControls(){
 
 function status(cost){
   const left = S.budget - cost;
-  if (left < -0.004) return "bad";
-  if (left < S.budget * 0.05) return "warn";
-  return "good";
+  return left < -0.004 ? "bad" : "good";
 }
 
 function renderSummary(){
@@ -845,15 +993,21 @@ function renderSummary(){
   const meals = slots.filter(k => R[S.plan[k]]).length;
   const days = new Set(slots.filter(k => R[S.plan[k]]).map(k => k[0])).size || 1;
   const pct = Math.min(100, e.cost / Math.max(S.budget, e.cost, 1) * 100);
+  const mix = {1: 0, 2: 0, 3: 0}; let fvSum = 0;
+  for (const k of slots) { const r = R[S.plan[k]]; if (r) { mix[r.tr]++; fvSum += r.fv; } }
+  const mixHtml = [[1,"everyday"],[2,"step-up"],[3,"treat"]].filter(([t]) => mix[t]).map(([t, n]) => `<span class="mx t${t}"><b>${mix[t]}</b> ${n}${t === 3 && mix[t] > 1 ? "s" : ""}</span>`).join("");
+  const fvDay = fvSum / days;
   const mark = e.cost > S.budget ? S.budget / e.cost * 100 : 100;
   $("#summary").innerHTML = `
     <div class="sum-main">
       <div class="label">Estimated shop</div>
       <div class="sum-total"><strong class="num">${money(e.cost)}</strong><span>of your ${money(S.budget)} budget</span></div>
+      <div class="mix">${mixHtml}</div>
       <div class="meter" role="img" aria-label="${money(e.cost)} of ${money(S.budget)}"><div class="meter-fill ${st === "good" ? "" : st}" style="width:${pct}%"></div>${e.cost > S.budget ? `<div class="meter-mark" style="left:calc(${mark}% - 1px)"></div>` : ""}</div>
     </div>
     <div class="stat"><span class="label">${left >= 0 ? "Left over" : "Over budget"}</span><b class="num ${left >= 0 ? "good" : "bad"}">${money(Math.abs(left))}</b><small>${left >= 0 ? "to spend on treats or top-ups" : "swap a meal or raise the budget"}</small></div>
     <div class="stat"><span class="label">Per person, per day</span><b class="num">${money(e.cost / S.people / days)}</b><small>${meals} meals for ${S.people === 1 ? "1 person" : S.people + " people"}</small></div>
+    <div class="stat"><span class="label">Fruit &amp; veg</span><b class="num">${fvDay >= 5 ? "5+ a day" : (Math.round(fvDay * 2) / 2).toFixed(1).replace(".0", "") + " a day"}</b><small>${fvDay >= 5 ? "these meals cover everyone's 5 a day" : "portions per person, before snacks"}</small></div>
     <div class="stat"><span class="label">Stays in the cupboard</span><b class="num">${money(Math.max(0, e.cost - e.eaten))}</b><small>part-used packs you'll carry into next week</small></div>`;
   $("#hdrTotal").innerHTML = `<span class="hide-sm" style="color:var(--muted)">This week</span><span class="pill ${st}">${money(e.cost)} / ${money(S.budget)}</span>`;
   // over-budget notice
@@ -861,8 +1015,11 @@ function renderSummary(){
   if (st === "bad") {
     n.innerHTML = `<div class="notice">${ICON.alert}<div><b>This plan is ${money(-left)} over budget.</b> ${Object.keys(S.locks).length ? "Some locked meals may be holding the price up. Unlock them and shuffle, or " : "Try "}fewer meals, cheaper swaps, or a budget of about ${money(Math.ceil(e.cost))}.</div></div>`;
   } else n.innerHTML = "";
+  const dins = slots.filter(k => k[2] === "d" && R[S.plan[k]]).map(k => S.plan[k]);
+  const repeats = dins.length - new Set(dins).size;
+  if (st !== "bad" && repeats >= 2 && dins.length >= 5) n.innerHTML += `<div class="notice info">${ICON.info}<div><b>Cook once, eat twice.</b> ${repeats} dinners repeat because doubling a recipe uses up whole packs and keeps the shop within ${money(S.budget)}. Raise the budget for more variety, or swap any repeat.</div></div>`;
   const empty = MEALS.filter(([m]) => S.meals[m] && !RECIPES.some(r => r.t === m && allowed(r))).map(([, nm]) => nm.toLowerCase());
-  if (empty.length) n.innerHTML += `<div class="notice" style="margin-top:${st === "bad" ? 10 : 0}px">${ICON.alert}<div><b>No ${empty.join(" or ")} ideas left.</b> Everything we know uses something you avoid. <button class="add-link" data-action="prefs">Review foods you avoid</button></div></div>`;
+  if (empty.length) n.innerHTML += `<div class="notice">${ICON.alert}<div><b>No ${empty.join(" or ")} ideas left.</b> Everything we know uses something you avoid. <button class="add-link" data-action="prefs">Review foods you avoid</button></div></div>`;
 }
 
 function renderWeek(){
@@ -885,7 +1042,7 @@ function renderWeek(){
       return `<div class="meal${locked ? " locked" : ""}${changed.has(k) ? " changed" : ""}" data-slot="${k}">
         <span class="mtype"><i class="dot ${m}"></i>${n}</span>
         <button class="meal-name" data-action="open" data-slot="${k}">${esc(r.name)}</button>
-        <div class="meal-meta"><span>${r.time} min</span><span aria-hidden="true">·</span><span class="num">${pence(portionCost(r))} a portion</span></div>
+        <div class="meal-meta"><span>${r.time} min</span><span aria-hidden="true">·</span><span class="num">${pence(portionCost(r))}</span>${r.fv >= .5 ? `<span aria-hidden="true">·</span><span>${fiveText(r.fv)}</span>` : ""}${r.tr === 3 ? '<span class="tier t3">Treat</span>' : r.tr === 2 ? '<span class="tier t2">Step-up</span>' : ""}</div>
         <div class="meal-act">
           <button class="icon-btn" data-action="lock" data-slot="${k}" aria-pressed="${locked}" title="${locked ? "Unlock" : "Lock this meal"}" aria-label="${locked ? "Unlock" : "Lock"} ${esc(r.name)} on ${DAYS[d]}">${locked ? ICON.lock : ICON.unlock}</button>
           <button class="icon-btn" data-action="reject" data-slot="${k}" title="Not this one: pick something else" aria-label="Replace ${esc(r.name)} on ${DAYS[d]} with something else">${ICON.nope}</button>
@@ -1033,7 +1190,7 @@ function recipeModal(k){
     <div class="sheet-h"><div style="flex:1;min-width:0">
       <div class="eyebrow"><i class="dot ${r.t}"></i>${slotLabel(k)}</div>
       <h2 id="mTitle">${esc(r.name)}</h2>
-      <div class="tags"><span class="pill neutral">${ICON.clock} ${r.time} min</span><span class="pill neutral">${PROTEIN[r.m]}</span><span class="pill good num">${pence(portionCost(r))} a portion</span>${locked ? '<span class="pill warn">Locked</span>' : ""}</div>
+      <div class="tags"><span class="pill neutral">${ICON.clock} ${r.time} min</span><span class="pill neutral">${PROTEIN[r.m]}</span><span class="pill neutral">${TIER[r.tr]}</span>${r.fv >= .5 ? `<span class="pill good">${fiveText(r.fv)}</span>` : ""}<span class="pill good num">${pence(portionCost(r))} a portion</span>${locked ? '<span class="pill warn">Locked</span>' : ""}</div>
     </div><button class="icon-btn" style="opacity:1" data-action="close" aria-label="Close">${ICON.close}</button></div>
     <div class="sheet-b"><div class="recipe">
       <div><h3>Ingredients · serves ${S.people}</h3><ul class="ing-list">${ingr}</ul></div>
@@ -1061,7 +1218,7 @@ function swapModal(k){
     <div class="sheet-b">
       <div class="swap-head"><span>Change to your total shop</span><span>${DIET_NAME[S.diet] ? cap(DIET_NAME[S.diet]) + " options" : opts.length + " options"}</span></div>
       <ul class="swap-list">${opts.map(o => `<li class="swap-row"><button class="swap-item${o.r.id === cur ? " current" : ""}" ${o.r.id === cur ? 'aria-current="true"' : `data-action="choose" data-slot="${k}" data-r="${o.r.id}"`}>
-        <span><b>${esc(o.r.name)}</b><small>${o.r.time} min · ${PROTEIN[o.r.m]} · ${pence(portionCost(o.r))} a portion</small></span>${fmtDelta(o.delta, o.r.id === cur)}</button><button class="hide-meal" data-action="banMeal" data-id="${o.r.id}" data-slot="${k}" data-ctx="swap" title="Never suggest ${esc(o.r.name)}" aria-label="Never suggest ${esc(o.r.name)}">${ICON.eye}</button></li>`).join("") || `<li class="empty-note">No ${MEAL_NAME[k[2]].toLowerCase()} ideas left that avoid everything on your list.</li>`}</ul>
+        <span><b>${esc(o.r.name)}</b><small>${TIER[o.r.tr]} · ${o.r.time} min · ${PROTEIN[o.r.m]} · ${pence(portionCost(o.r))} a portion</small></span>${fmtDelta(o.delta, o.r.id === cur)}</button><button class="hide-meal" data-action="banMeal" data-id="${o.r.id}" data-slot="${k}" data-ctx="swap" title="Never suggest ${esc(o.r.name)}" aria-label="Never suggest ${esc(o.r.name)}">${ICON.eye}</button></li>`).join("") || `<li class="empty-note">No ${MEAL_NAME[k[2]].toLowerCase()} ideas left that avoid everything on your list.</li>`}</ul>
     </div>
     <div class="sheet-f">${R[cur] ? `<button class="btn ghost" data-action="open" data-slot="${k}">Back to recipe</button><span class="spacer"></span><button class="btn" data-action="skip" data-slot="${k}">Skip this meal</button>` : `<span class="spacer"></span><button class="btn" data-action="close">Cancel</button>`}</div>`);
 }
@@ -1192,12 +1349,12 @@ function setBudget(v, fromRange){
   if (fromRange) $("#budgetNum").value = v; else $("#budgetRange").value = Math.min(150, Math.max(15, v));
   renderSummary();
   clearTimeout(budgetT);
-  budgetT = setTimeout(() => { generate(); render(); const c = evaluate(S.plan).cost; toast(c > S.budget ? `Cheapest week we could find is ${money(c)}` : `Plan rebalanced for ${money(S.budget)}`); }, 450);
+  budgetT = setTimeout(() => replan(() => { const c = evaluate(S.plan).cost; toast(c > S.budget ? `Cheapest week we could find is ${money(c)}` : `Plan rebalanced for ${money(S.budget)}`); }), 450);
 }
 $("#budgetNum").addEventListener("input", e => setBudget(e.target.value));
 $("#budgetNum").addEventListener("blur", e => { if (!(+e.target.value >= 10)) e.target.value = S.budget; });
 $("#budgetRange").addEventListener("input", e => setBudget(e.target.value, true));
-$("#diet").addEventListener("change", e => { S.diet = e.target.value; generate(); render(); toast(S.diet === "any" ? "Showing all meals" : `Plan is now ${DIET_NAME[S.diet]}`); });
+$("#diet").addEventListener("change", e => { S.diet = e.target.value; replan(() => toast(S.diet === "any" ? "Showing all meals" : `Plan is now ${DIET_NAME[S.diet]}`)); });
 $("#pantry").addEventListener("change", e => { S.pantry = e.target.checked; save(); render(); });
 
 const tipEl = $("#vizTip");
@@ -1241,14 +1398,13 @@ document.addEventListener("click", e => {
   switch (a) {
     case "regen": {
       const snap = snapshot();
-      generate(); render();
-      toast(`New week planned · ${money(evaluate(S.plan).cost)}`, () => restore(snap));
+      replan(() => toast(`New week planned · ${money(evaluate(S.plan).cost)}`, () => restore(snap)));
       break;
     }
     case "people": {
       const n = Math.min(8, Math.max(1, S.people + +b.dataset.d));
       if (n === S.people) break;
-      S.people = n; generate(); render(); toast(`Planning for ${n} ${n === 1 ? "person" : "people"}`);
+      S.people = n; renderControls(); replan(() => toast(`Planning for ${n} ${n === 1 ? "person" : "people"}`));
       break;
     }
     case "meal": {
