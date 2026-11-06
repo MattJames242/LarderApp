@@ -191,6 +191,23 @@ body.planning .week,body.planning .summary{opacity:.55;transition:opacity .15s}
 .meal.locked .meal-name::before{content:"";}
 .meal.skipped .meal-name{color:var(--muted);font-weight:500;font-style:italic}
 .meal.off{background:repeating-linear-gradient(135deg,transparent 0 8px,var(--surface-2) 8px 9px)}
+.days-pick{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.daychips{display:flex;gap:4px}
+.daychip{width:38px;height:34px;border-radius:8px;border:1px solid var(--line);background:var(--bg);font-weight:600;font-size:13px;color:var(--muted);text-decoration:line-through;text-decoration-thickness:1.5px}
+.daychip[aria-pressed=true]{background:var(--brand-soft);border-color:transparent;color:var(--ink);text-decoration:none}
+.daychip:hover{border-color:var(--muted)}
+.foot-left{display:flex;align-items:center;gap:12px 24px;flex-wrap:wrap}
+.out-btn{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:5px;margin-top:6px;font-size:12px;font-weight:600;color:var(--muted);padding:3px 7px 3px 5px;border-radius:6px;border:1px solid transparent;width:max-content}
+.out-btn:hover{color:var(--ink);border-color:var(--line);background:var(--surface)}
+.out-btn:focus-visible{outline:2px solid var(--brand)}
+.day.away{background:repeating-linear-gradient(135deg,transparent 0 9px,var(--surface-2) 9px 10px)}
+.day.away .day-h{opacity:.7}
+.away-cell{grid-column:2/-1;display:flex;align-items:center;gap:14px;padding:14px 16px;min-width:0}
+.away-cell>div{flex:1;min-width:0;display:flex;flex-direction:column}
+.away-cell b{font-weight:600}
+.away-ico{width:34px;height:34px;border-radius:50%;background:var(--accent-soft);color:var(--warn);display:grid;place-items:center;flex:none}
+.ph.out{opacity:.45;text-decoration:line-through}
+.pc.day.out{background:repeating-linear-gradient(135deg,transparent 0 6px,var(--surface-2) 6px 7px)}
 .add-link{all:unset;cursor:pointer;font-size:13px;font-weight:600;color:var(--brand)}
 .add-link:hover{text-decoration:underline}
 
@@ -407,6 +424,12 @@ textarea.copybox{width:100%;min-height:300px;font-family:var(--f-mono);font-size
   .day{grid-template-columns:1fr}
   .day-h{flex-direction:row;align-items:baseline;gap:8px;border-right:0;border-bottom:1px solid var(--line);background:var(--surface-2);padding:10px 14px}
   .day-h .dc{margin-left:auto;padding-top:0}
+  .day-h .out-btn{margin-top:0;align-self:center}
+  .day-h .out-btn span{display:none}
+  .away-cell{grid-column:1/-1;padding:12px 14px}
+  .daychip{width:auto;flex:1;min-width:0}
+  .daychips{flex:1}
+  .days-pick{width:100%}
   .meal+.meal{border-left:0;border-top:1px solid var(--line)}
   .mtype{display:flex}
   .summary{grid-template-columns:1fr 1fr}
@@ -492,7 +515,8 @@ textarea.copybox{width:100%;min-height:300px;font-family:var(--f-mono);font-size
       </button>
     </div>
     <div class="settings-foot">
-      <label class="switch"><input type="checkbox" id="pantry"> I already have oil, spices, dried herbs and honey</label>
+      <div class="foot-left"><div class="days-pick"><span class="label" id="daysLbl">Eating in</span><div class="daychips" role="group" aria-labelledby="daysLbl" id="dayChips"></div></div>
+      <label class="switch"><input type="checkbox" id="pantry"> I already have oil, spices, dried herbs and honey</label></div>
       <div class="foot-right"><span class="hint" id="lockHint"></span><button type="button" class="btn sm avoid-btn" data-action="prefs" id="prefsBtn"></button></div>
     </div>
   </section>
@@ -756,7 +780,7 @@ const DIET_NAME = {any:"",nopork:"no pork",pesc:"pescatarian",veg:"vegetarian"};
 
 /* ------------------------------------------------------------------ state */
 const KEY = "larder.v1";
-const DEFAULTS = {budget:40,people:2,meals:{b:true,l:true,d:true},diet:"any",pantry:true,prices:{},have:{},ticked:{},plan:{},locks:{},banIng:{},banMeal:{},usageSort:"aisle"};
+const DEFAULTS = {budget:40,people:2,meals:{b:true,l:true,d:true},diet:"any",pantry:true,prices:{},have:{},ticked:{},plan:{},locks:{},banIng:{},banMeal:{},daysOff:{},usageSort:"aisle"};
 let S = load();
 function load(){
   let s = null;
@@ -767,7 +791,7 @@ function load(){
   out.meals = Object.assign({b:true,l:true,d:true}, s.meals || {});
   for (const k in out.plan) if (out.plan[k] !== "skip" && !R[out.plan[k]]) delete out.plan[k];
   for (const k in out.prices) if (!ING[k]) delete out.prices[k];
-  out.banIng = out.banIng || {}; out.banMeal = out.banMeal || {};
+  out.banIng = out.banIng || {}; out.banMeal = out.banMeal || {}; out.daysOff = out.daysOff || {};
   return out;
 }
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
@@ -814,7 +838,8 @@ function weekStart(){
 const fmtDate = (d, o) => d.toLocaleDateString("en-GB", o);
 const dietOK = r => S.diet === "any" ? true : S.diet === "veg" ? !r.hasMeat && !r.hasFish : S.diet === "pesc" ? !r.hasMeat : !r.hasPork;
 const allowed = r => dietOK(r) && !S.banMeal[r.id] && !r.ing.some(([id]) => S.banIng[id]);
-function activeSlots(){ const out = []; for (let d = 0; d < 7; d++) for (const [m] of MEALS) if (S.meals[m]) out.push(d + "-" + m); return out; }
+function activeSlots(){ const out = []; for (let d = 0; d < 7; d++) if (!S.daysOff[d]) for (const [m] of MEALS) if (S.meals[m]) out.push(d + "-" + m); return out; }
+const daysPlanned = () => 7 - Object.keys(S.daysOff).filter(d => S.daysOff[d]).length;
 const costed = id => !S.have[id] && !(ING[id].st && S.pantry);
 function portionCost(r){ let c = 0; for (const [id, q] of r.ing) if (!(ING[id].st && S.pantry)) c += price(id) / ING[id].size * q; return c; }
 
@@ -840,7 +865,10 @@ function score(plan, slots){
   let s = e.waste * 1.6;
   const over = e.cost - S.budget;
   if (over > 0) s += 60 + over * 40;
-  const target = S.budget * 0.94;
+  // Eating out on some days or skipping meals means a smaller shop: scale the spend target by the share of the week planned.
+  const full = 7 * MEALS.filter(([m]) => S.meals[m]).length || 1;
+  const planned = slots.filter(k => R[plan[k]]).length;
+  const target = S.budget * 0.94 * Math.min(1, planned / full);
   if (e.eaten < target) s += (target - e.eaten) * 0.85;
   const counts = {};
   for (const k of slots) {
@@ -957,6 +985,7 @@ const ICON = {
   nope:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 14V2"/><path d="M9 18.1 10 14H4.2a2 2 0 0 1-1.9-2.5l2.3-8A2 2 0 0 1 6.5 2H17a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.8a2 2 0 0 0-1.7 1L9.7 22a3 3 0 0 1-.7-3.9z"/></svg>',
   eye:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7c2 0 3.7.6 5.1 1.5M22 12s-3.5 7-10 7c-2 0-3.7-.6-5.1-1.5"/><path d="M3 3l18 18"/></svg>',
   info:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/></svg>',
+  out:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3v8a2 2 0 0 0 2 2v8"/><path d="M11 3v8a2 2 0 0 1-2 2"/><path d="M9 3v6"/><path d="M17 21V3c-2 1-3 4-3 7s1 4 3 4"/></svg>',
   clock:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'
 };
 let TAB = "week";
@@ -971,9 +1000,10 @@ function renderControls(){
   $("#peopleInc").disabled = S.people >= 8;
   $("#diet").value = S.diet;
   $("#pantry").checked = S.pantry;
+  $("#dayChips").innerHTML = DAYS.map((d, i) => `<button type="button" class="daychip" data-action="dayoff" data-d="${i}" aria-pressed="${!S.daysOff[i]}" title="${S.daysOff[i] ? d + ": eating out" : d + ": eating in"}" aria-label="${d}, ${S.daysOff[i] ? "eating out" : "eating in"}">${d.slice(0, 2)}</button>`).join("");
   $("#mealChips").innerHTML = MEALS.map(([m, n]) => `<button type="button" class="chip" data-action="meal" data-m="${m}" aria-pressed="${!!S.meals[m]}"><span class="tick"></span>${n}</button>`).join("");
   const locked = Object.keys(S.locks).filter(k => S.locks[k] && activeSlots().includes(k)).length;
-  $("#lockHint").textContent = locked ? `${locked} locked ${locked === 1 ? "meal stays" : "meals stay"} put when you shuffle.` : "Lock a meal to keep it when you shuffle.";
+  $("#lockHint").textContent = locked ? `${locked} locked ${locked === 1 ? "meal stays" : "meals stay"} put when you shuffle.` : "";
   const nI = Object.keys(S.banIng).length, nM = Object.keys(S.banMeal).length;
   $("#prefsBtn").innerHTML = `${ICON.ban} Foods I avoid${nI + nM ? ` <span class="count">${nI + nM}</span>` : ""}`;
   $("#prefsBtn").title = nI + nM ? `${nI} ingredient${nI === 1 ? "" : "s"}, ${nM} meal${nM === 1 ? "" : "s"} hidden` : "Pick ingredients or meals you never want suggested";
@@ -1006,7 +1036,7 @@ function renderSummary(){
       <div class="meter" role="img" aria-label="${money(e.cost)} of ${money(S.budget)}"><div class="meter-fill ${st === "good" ? "" : st}" style="width:${pct}%"></div>${e.cost > S.budget ? `<div class="meter-mark" style="left:calc(${mark}% - 1px)"></div>` : ""}</div>
     </div>
     <div class="stat"><span class="label">${left >= 0 ? "Left over" : "Over budget"}</span><b class="num ${left >= 0 ? "good" : "bad"}">${money(Math.abs(left))}</b><small>${left >= 0 ? "to spend on treats or top-ups" : "swap a meal or raise the budget"}</small></div>
-    <div class="stat"><span class="label">Per person, per day</span><b class="num">${money(e.cost / S.people / days)}</b><small>${meals} meals for ${S.people === 1 ? "1 person" : S.people + " people"}</small></div>
+    <div class="stat"><span class="label">Per person, per day</span><b class="num">${money(e.cost / S.people / days)}</b><small>${meals} meals for ${S.people === 1 ? "1 person" : S.people + " people"}${daysPlanned() < 7 ? `, ${daysPlanned()} day${daysPlanned() === 1 ? "" : "s"} in` : ""}</small></div>
     <div class="stat"><span class="label">Fruit &amp; veg</span><b class="num">${fvDay >= 5 ? "5+ a day" : (Math.round(fvDay * 2) / 2).toFixed(1).replace(".0", "") + " a day"}</b><small>${fvDay >= 5 ? "these meals cover everyone's 5 a day" : "portions per person, before snacks"}</small></div>
     <div class="stat"><span class="label">Stays in the cupboard</span><b class="num">${money(Math.max(0, e.cost - e.eaten))}</b><small>part-used packs you'll carry into next week</small></div>`;
   $("#hdrTotal").innerHTML = `<span class="hide-sm" style="color:var(--muted)">This week</span><span class="pill ${st}">${money(e.cost)} / ${money(S.budget)}</span>`;
@@ -1032,6 +1062,11 @@ function renderWeek(){
   let html = `<div class="week" style="--cols:${cols.length}"><div class="week-head"><div>Day</div>${cols.map(([m, n]) => `<div><i class="dot ${m}"></i>${n}</div>`).join("")}</div>`;
   for (let d = 0; d < 7; d++) {
     const date = new Date(ws); date.setDate(ws.getDate() + d);
+    const dh = (extra) => `<div class="day-h"><span class="dn">${DAYS[d]}</span><span class="dd">${fmtDate(date, {day:"numeric", month:"short"})}</span>${extra}</div>`;
+    if (S.daysOff[d]) {
+      html += `<div class="day away${+date === +today ? " today" : ""}">${dh("")}<div class="away-cell"><span class="away-ico" aria-hidden="true">${ICON.out}</span><div><b>Eating out</b><span class="hint">Nothing to cook or buy for ${DAYS[d]}.</span></div><button class="btn sm" data-action="dayoff" data-d="${d}">Plan ${DAYS[d]}</button></div></div>`;
+      continue;
+    }
     let dayCost = 0;
     const cells = cols.map(([m, n]) => {
       const k = d + "-" + m, id = S.plan[k], r = R[id], locked = !!S.locks[k];
@@ -1050,7 +1085,7 @@ function renderWeek(){
         </div>
       </div>`;
     }).join("");
-    html += `<div class="day${+date === +today ? " today" : ""}"><div class="day-h"><span class="dn">${DAYS[d]}</span><span class="dd">${fmtDate(date, {day:"numeric", month:"short"})}</span><span class="dc num" title="Ingredient value used this day">${money(dayCost)}</span></div>${cells}</div>`;
+    html += `<div class="day${+date === +today ? " today" : ""}">${dh(`<span class="dc num" title="Ingredient value used this day">${money(dayCost)}</span><button class="out-btn" data-action="dayoff" data-d="${d}" title="Eating out or away on ${DAYS[d]}: take the whole day off the plan">${ICON.out}<span>Eating out</span></button>`)}${cells}</div>`;
   }
   view.week.innerHTML = html + "</div>";
   changed = new Set();
@@ -1274,7 +1309,7 @@ function renderUsage(){
   else if (S.usageSort === "most") ids.sort((a, b) => u[b].length - u[a].length || first(a) - first(b));
   else ids.sort((a, b) => aisleIdx[ING[a].a] - aisleIdx[ING[b].a] || ING[a].n.localeCompare(ING[b].n));
   const cols = MEALS.filter(([m]) => S.meals[m]);
-  let html = `<div class="ph first">Ingredient</div>` + DAYS.map((d, i) => { const dt = new Date(ws); dt.setDate(ws.getDate() + i); return `<div class="ph" title="${d} ${fmtDate(dt, {day:"numeric", month:"short"})}">${d.slice(0, 3)}<small aria-hidden="true">${cols.map(([m]) => `<span>${m.toUpperCase()}</span>`).join("")}</small></div>`; }).join("") + `<div class="ph last">This week</div>`;
+  let html = `<div class="ph first">Ingredient</div>` + DAYS.map((d, i) => { const dt = new Date(ws); dt.setDate(ws.getDate() + i); return `<div class="ph${S.daysOff[i] ? " out" : ""}" title="${d} ${fmtDate(dt, {day:"numeric", month:"short"})}${S.daysOff[i] ? ", eating out" : ""}">${d.slice(0, 3)}<small aria-hidden="true">${cols.map(([m]) => `<span>${m.toUpperCase()}</span>`).join("")}</small></div>`; }).join("") + `<div class="ph last">This week</div>`;
   let lastAisle = null;
   for (const id of ids) {
     const g = ING[id];
@@ -1284,7 +1319,7 @@ function renderUsage(){
     const fresh = (g.w || 0) >= .8 && !g.st && span >= 5;
     html += `<div class="prow" style="display:contents"><div class="pc first"><span>${esc(g.n)}</span>${fresh ? `<span class="spread" title="Goes off quickly and is used across ${span} days. Buy it fresh midweek or freeze some.">Spread over ${span} days</span>` : `<small>${esc(g.pk)}${g.st ? " · cupboard" : ""}</small>`}</div>`;
     for (let d = 0; d < 7; d++) {
-      html += `<div class="pc day${d % 2 ? " alt" : ""}">` + cols.map(([m, mn]) => {
+      html += `<div class="pc day${d % 2 ? " alt" : ""}${S.daysOff[d] ? " out" : ""}">` + cols.map(([m, mn]) => {
         const hits = es.filter(e => e.d === d && e.m === m);
         if (!hits.length) return `<span class="lane empty"></span>`;
         const q = hits.reduce((s, e) => s + e.q, 0), e0 = hits[0];
@@ -1468,6 +1503,16 @@ document.addEventListener("click", e => {
       if (ctx === "prefs") prefsModal(true); else closeModal();
       const nm = ING[id].n;
       toast(nowBanned ? `Avoiding ${nm.toLowerCase()}${replaced ? ` · ${replaced} meal${replaced === 1 ? "" : "s"} replaced` : ""}` : `${nm} allowed again`, nowBanned ? () => restore(snap) : null);
+      break;
+    }
+    case "dayoff": {
+      const d = +b.dataset.d, snap = JSON.stringify({plan:S.plan, locks:S.locks, daysOff:S.daysOff});
+      if (S.daysOff[d]) { delete S.daysOff[d]; replan(() => toast(`${DAYS[d]} added back to the plan`), {keepAll: true}); }
+      else {
+        if (daysPlanned() <= 1) { toast("Keep at least one day in the plan"); break; }
+        S.daysOff[d] = 1; save(); render();
+        toast(`${DAYS[d]} off the plan · shop now ${money(evaluate(S.plan).cost)}`, () => { Object.assign(S, JSON.parse(snap)); save(); render(); });
+      }
       break;
     }
     case "prefs": prefsModal(); break;
