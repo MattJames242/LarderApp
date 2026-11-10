@@ -480,6 +480,49 @@ button.cd:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}
 .cd-out{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--warn)}
 .cal-foot{display:flex;gap:10px;align-items:flex-start;padding:12px 16px;font-size:13px;color:var(--muted)}
 .cal-foot svg{flex:none;margin-top:1px}
+/* Favourites */
+.fav-btn[aria-pressed=true],.icon-btn.fav-btn[aria-pressed=true]{color:var(--bad);background:var(--bad-soft)}
+.fav-btn[aria-pressed=false]{background:transparent}
+.tab .count:empty{display:none}
+.fav-btn:hover{color:var(--bad);background:var(--bad-soft)}
+.favmark{display:inline-flex;vertical-align:-2px;margin-right:5px;color:var(--bad)}
+.favmark svg{width:14px;height:14px}
+.swap-item .favmark svg{width:13px;height:13px}
+.favs{display:flex;flex-direction:column;gap:14px}
+.favs-top{display:flex;align-items:center;justify-content:space-between;gap:10px 20px;flex-wrap:wrap}
+.seg-n{font-family:var(--f-mono);font-size:11px;opacity:.7}
+.fav-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.fav-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px 14px 16px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.fc-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-right:-6px}
+.fc-type{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.fc-name{all:unset;cursor:pointer;font-family:var(--f-display);font-weight:800;font-size:18px;line-height:1.2;letter-spacing:-.01em}
+.fc-name:hover{text-decoration:underline;text-underline-offset:3px}
+.fc-name:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:4px}
+.fc-eaten{margin:2px 0 0;font-size:13px;color:var(--muted)}
+.fc-plan{margin:0;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--good)}
+.fc-plan svg{width:15px;height:15px;flex:none}
+.fc-warn{margin:0;font-size:13px;color:var(--warn)}
+.fc-actions{display:flex;gap:8px;margin-top:auto;padding-top:8px}
+.fc-actions .btn{flex:1}
+.favs-empty{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:44px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
+.favs-empty h2{font-size:22px;font-weight:800}
+.favs-empty p{margin:0 0 8px;max-width:46ch;color:var(--muted)}
+.fe-ico{width:56px;height:56px;border-radius:50%;background:var(--bad-soft);color:var(--bad);display:grid;place-items:center}
+.fe-ico svg{width:28px;height:28px}
+.fav-strip{display:flex;flex-wrap:wrap;gap:8px}
+.fav-chip{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border:1px solid var(--line);border-radius:999px;font-size:14px;font-weight:500;max-width:100%}
+.fav-chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fav-chip:hover{background:var(--surface-2)}
+.fav-chip:focus-visible{outline:2px solid var(--brand)}
+.pick-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.pick-row{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:96px minmax(0,1fr) auto;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;cursor:pointer;color:var(--ink)}
+button.pick-row:hover{border-color:var(--brand);background:var(--surface-2)}
+button.pick-row:focus-visible{outline:2px solid var(--brand)}
+div.pick-row{cursor:default;color:var(--muted);grid-template-columns:96px 1fr}
+div.pick-row.same{background:var(--brand-soft);border-color:transparent;color:var(--ink)}
+.pk-day{display:flex;flex-direction:column;font-size:12.5px;color:var(--muted);line-height:1.3}
+.pk-day b{color:var(--ink);font-size:14.5px}
+.pk-cur{font-size:13.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* Bottom navigation (phones) */
 .bottomnav{display:none}
 
@@ -554,9 +597,11 @@ button.cd:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}
   #planChrome{gap:14px}
   .tabbar:has(.tab-actions:empty){display:none}
   main{padding-bottom:calc(92px + env(safe-area-inset-bottom,0px))}
-  .bottomnav{display:grid;grid-template-columns:repeat(6,1fr);position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--surface);border-top:1px solid var(--line);padding:6px max(4px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(4px,env(safe-area-inset-left,0px));box-shadow:0 -4px 18px rgba(0,0,0,.05)}
+  .bottomnav{display:grid;grid-template-columns:repeat(7,1fr);position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--surface);border-top:1px solid var(--line);padding:6px max(4px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(4px,env(safe-area-inset-left,0px));box-shadow:0 -4px 18px rgba(0,0,0,.05)}
   .bn{all:unset;cursor:pointer;position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 0 3px;border-radius:10px;color:var(--muted);font-size:10.5px;font-weight:600}
   .bn svg{width:22px;height:22px}
+  .bn span{font-size:10px;letter-spacing:-.01em}
+  .bn[aria-current=page] svg{padding:3px 10px}
   .bn[aria-current=page]{color:var(--brand)}
   .bn[aria-current=page] svg{background:var(--brand-soft);border-radius:999px;padding:3px 14px;box-sizing:content-box;margin:-3px 0}
   .bn:focus-visible{outline:2px solid var(--brand)}
@@ -612,6 +657,7 @@ button.cd:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}
       <button class="tab" role="tab" id="tab-week" aria-controls="view-week" data-tab="week">Week plan</button>
       <button class="tab" role="tab" id="tab-shop" aria-controls="view-shop" data-tab="shop"><span>Shopping<span class="hide-sm"> list</span></span><span class="count" id="shopCount"></span></button>
       <button class="tab" role="tab" id="tab-usage" aria-controls="view-usage" data-tab="usage">When used</button>
+      <button class="tab" role="tab" id="tab-favs" aria-controls="view-favs" data-tab="favs">Favourites <span class="count" id="favCount"></span></button>
       <button class="tab" role="tab" id="tab-calendar" aria-controls="view-calendar" data-tab="calendar">Calendar</button>
       <button class="tab" role="tab" id="tab-prices" aria-controls="view-prices" data-tab="prices">Prices</button>
     </div>
@@ -670,6 +716,7 @@ button.cd:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}
   <section id="view-week" role="tabpanel" aria-labelledby="tab-week"></section>
   <section id="view-shop" role="tabpanel" aria-labelledby="tab-shop" hidden></section>
   <section id="view-usage" role="tabpanel" aria-labelledby="tab-usage" hidden></section>
+  <section id="view-favs" role="tabpanel" aria-labelledby="tab-favs" hidden></section>
   <section id="view-calendar" role="tabpanel" aria-labelledby="tab-calendar" hidden></section>
   <section id="view-prices" role="tabpanel" aria-labelledby="tab-prices" hidden></section>
 
@@ -999,7 +1046,7 @@ const DIET_NAME = {any:"",nopork:"no pork",pesc:"pescatarian",veg:"vegetarian"};
 
 /* ------------------------------------------------------------------ state */
 const KEY = "larder.v1";
-const DEFAULTS = {budget:40,people:2,meals:{b:true,l:true,d:true},diet:"any",pantry:true,prices:{},have:{},ticked:{},plan:{},locks:{},banIng:{},banMeal:{},daysOff:{},usageSort:"aisle",name:"",planWeek:"",log:{},weeks:{}};
+const DEFAULTS = {budget:40,people:2,meals:{b:true,l:true,d:true},diet:"any",pantry:true,prices:{},have:{},ticked:{},plan:{},locks:{},banIng:{},banMeal:{},daysOff:{},usageSort:"aisle",name:"",planWeek:"",log:{},weeks:{},fav:{},favBoost:true,favFilter:"all"};
 let S = load();
 function load(){
   let s = null;
@@ -1010,7 +1057,7 @@ function load(){
   out.meals = Object.assign({b:true,l:true,d:true}, s.meals || {});
   for (const k in out.plan) if (out.plan[k] !== "skip" && !R[out.plan[k]]) delete out.plan[k];
   for (const k in out.prices) if (!ING[k]) delete out.prices[k];
-  out.banIng = out.banIng || {}; out.banMeal = out.banMeal || {}; out.daysOff = out.daysOff || {}; out.log = out.log || {}; out.weeks = out.weeks || {}; out.name = typeof out.name === "string" ? out.name : "";
+  out.banIng = out.banIng || {}; out.banMeal = out.banMeal || {}; out.daysOff = out.daysOff || {}; out.log = out.log || {}; out.fav = out.fav || {}; for (const k in out.fav) if (!R[k]) delete out.fav[k]; if (typeof out.favBoost !== "boolean") out.favBoost = true; out.weeks = out.weeks || {}; out.name = typeof out.name === "string" ? out.name : "";
   return out;
 }
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
@@ -1122,7 +1169,7 @@ function score(plan, slots){
   const counts = {}, heroes = {};
   for (const k of slots) {
     const id = plan[k], r = R[id]; if (!r) continue;
-    s -= (r.r + Math.min(r.fv, 3) * .3) * (r.t === "d" ? 1 : .55);
+    s -= (r.r + Math.min(r.fv, 3) * .3 + (S.favBoost && S.fav[id] ? .9 : 0)) * (r.t === "d" ? 1 : .55);
     const c = (counts[id] = (counts[id] || 0) + 1);
     // A repeat must save real money to be worth it: its penalty outweighs the spend it adds, so a big budget
     // buys variety, while a tight one can still double up to use whole packs.
@@ -1139,6 +1186,8 @@ function score(plan, slots){
   }
   return s;
 }
+const favBtn = (id, extra) => `<button class="icon-btn fav-btn" style="opacity:1" data-action="fav" data-r="${id}" aria-pressed="${!!S.fav[id]}" aria-label="${S.fav[id] ? "Remove from favourites" : "Add to favourites"}" title="${S.fav[id] ? "Remove from favourites" : "Add to favourites"}"${extra || ""}>${S.fav[id] ? ICON.heartFill : ICON.heart}</button>`;
+const favMark = id => S.fav[id] ? `<span class="favmark" title="Favourite" aria-label="Favourite">${ICON.heartFill}</span>` : "";
 let PCC = {};
 const pcOf = id => PCC[id] != null ? PCC[id] : (PCC[id] = portionCost(R[id]));
 function optimise(fixed){
@@ -1254,11 +1303,13 @@ const ICON = {
   chevL:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg>',
   chevR:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>',
   pencil:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>',
+  heart:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-7.5-10.4A4.3 4.3 0 0 1 12 7.4a4.3 4.3 0 0 1 7.5 2.7c0 5.8-7.5 10.4-7.5 10.4z"/></svg>',
+  heartFill:'<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-7.5-10.4A4.3 4.3 0 0 1 12 7.4a4.3 4.3 0 0 1 7.5 2.7c0 5.8-7.5 10.4-7.5 10.4z"/></svg>',
   clock:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'
 };
 let TAB = "week";
-const view = {home: $("#view-home"), calendar: $("#view-calendar"), week: $("#view-week"), shop: $("#view-shop"), usage: $("#view-usage"), prices: $("#view-prices")};
-const TABS = ["home","week","shop","usage","calendar","prices"];
+const view = {favs: $("#view-favs"), home: $("#view-home"), calendar: $("#view-calendar"), week: $("#view-week"), shop: $("#view-shop"), usage: $("#view-usage"), prices: $("#view-prices")};
+const TABS = ["home","week","shop","favs","usage","calendar","prices"];
 
 function renderControls(){
   $("#budgetNum").value = S.budget;
@@ -1344,7 +1395,7 @@ function renderWeek(){
       const pc = portionCost(r) * S.people; dayCost += pc;
       return `<div class="meal${locked ? " locked" : ""}${changed.has(k) ? " changed" : ""}" data-slot="${k}">
         <span class="mtype"><i class="dot ${m}"></i>${n}</span>
-        <button class="meal-name" data-action="open" data-slot="${k}">${esc(r.name)}</button>
+        <button class="meal-name" data-action="open" data-slot="${k}">${favMark(r.id)}${esc(r.name)}</button>
         <div class="meal-meta"><span>${r.time} min</span><span aria-hidden="true">·</span><span class="num">${pence(portionCost(r))}</span>${r.fv >= .5 ? `<span aria-hidden="true">·</span><span>${fiveText(r.fv)}</span>` : ""}${r.tr === 3 ? '<span class="tier t3">Treat</span>' : r.tr === 2 ? '<span class="tier t2">Step-up</span>' : ""}</div>
         <div class="meal-act">
           <button class="icon-btn" data-action="lock" data-slot="${k}" aria-pressed="${locked}" title="${locked ? "Unlock" : "Lock this meal"}" aria-label="${locked ? "Unlock" : "Lock"} ${esc(r.name)} on ${DAYS[d]}">${locked ? ICON.lock : ICON.unlock}</button>
@@ -1446,7 +1497,7 @@ function renderTabActions(){
   const a = $("#tabActions");
   if (TAB === "week") a.innerHTML = `<button class="btn sm ghost" data-action="unlockall" ${Object.keys(S.locks).length ? "" : "disabled"}>Unlock all</button><button class="btn sm" data-action="tab" data-tab="shop">See shopping list</button>`;
   else if (TAB === "shop") a.innerHTML = `<button class="btn sm" data-action="copy">${ICON.copy} Copy list</button>`;
-  else if (TAB === "home" || TAB === "calendar") a.innerHTML = "";
+  else if (TAB === "home" || TAB === "calendar" || TAB === "favs") a.innerHTML = "";
   else if (TAB === "usage") a.innerHTML = `<div class="seg" role="group" aria-label="Sort ingredients"><button data-action="usort" data-v="aisle" aria-pressed="${S.usageSort === "aisle"}">By aisle</button><button data-action="usort" data-v="first" aria-pressed="${S.usageSort === "first"}">By first use</button><button data-action="usort" data-v="most" aria-pressed="${S.usageSort === "most"}">Most used</button></div>`;
   else a.innerHTML = `<button class="btn sm ghost" data-action="resetall" ${Object.keys(S.prices).length ? "" : "disabled"}>Reset all prices</button>`;
 }
@@ -1457,6 +1508,8 @@ function render(){
   if (TAB === "usage") renderUsage();
   if (TAB === "home") renderHome();
   if (TAB === "calendar") renderCalendar();
+  if (TAB === "favs") renderFavs();
+  const nf = Object.keys(S.fav).length; $("#favCount").textContent = nf || "";
   renderTabActions();
   // Settings and the budget summary belong to planning; the Used and Prices views don't repeat them.
   $("#planChrome").hidden = !["week","shop"].includes(TAB);
@@ -1503,7 +1556,7 @@ function recipeModal(k){
       <div class="eyebrow"><i class="dot ${r.t}"></i>${slotLabel(k)}</div>
       <h2 id="mTitle">${esc(r.name)}</h2>
       <div class="tags"><span class="pill neutral">${ICON.clock} ${r.time} min</span><span class="pill neutral">${PROTEIN[r.m]}</span><span class="pill neutral">${TIER[r.tr]}</span>${r.fv >= .5 ? `<span class="pill good">${fiveText(r.fv)}</span>` : ""}<span class="pill good num">${pence(portionCost(r))} a portion</span>${locked ? '<span class="pill warn">Locked</span>' : ""}</div>
-    </div><button class="icon-btn" style="opacity:1" data-action="close" aria-label="Close">${ICON.close}</button></div>
+    </div>${favBtn(r.id)}<button class="icon-btn" style="opacity:1" data-action="close" aria-label="Close">${ICON.close}</button></div>
     <div class="sheet-b"><div class="recipe">
       <div><h3>Ingredients · serves ${S.people}</h3><ul class="ing-list">${ingr}</ul></div>
       <div><h3>Method</h3><ol class="steps">${r.steps.map(s => `<li><span>${esc(s)}</span></li>`).join("")}</ol>${r.tip ? `<div class="tip"><b>Tip.</b> ${esc(r.tip)}</div>` : ""}</div>
@@ -1530,7 +1583,7 @@ function swapModal(k){
     <div class="sheet-b">
       <div class="swap-head"><span>Change to your total shop</span><span>${DIET_NAME[S.diet] ? cap(DIET_NAME[S.diet]) + " options" : opts.length + " options"}</span></div>
       <ul class="swap-list">${opts.map(o => `<li class="swap-row"><button class="swap-item${o.r.id === cur ? " current" : ""}" ${o.r.id === cur ? 'aria-current="true"' : `data-action="choose" data-slot="${k}" data-r="${o.r.id}"`}>
-        <span><b>${esc(o.r.name)}</b><small>${TIER[o.r.tr]} · ${o.r.time} min · ${PROTEIN[o.r.m]} · ${pence(portionCost(o.r))} a portion</small></span>${fmtDelta(o.delta, o.r.id === cur)}</button><button class="hide-meal" data-action="banMeal" data-id="${o.r.id}" data-slot="${k}" data-ctx="swap" title="Never suggest ${esc(o.r.name)}" aria-label="Never suggest ${esc(o.r.name)}">${ICON.eye}</button></li>`).join("") || `<li class="empty-note">No ${MEAL_NAME[k[2]].toLowerCase()} ideas left that avoid everything on your list.</li>`}</ul>
+        <span><b>${favMark(o.r.id)}${esc(o.r.name)}</b><small>${TIER[o.r.tr]} · ${o.r.time} min · ${PROTEIN[o.r.m]} · ${pence(portionCost(o.r))} a portion</small></span>${fmtDelta(o.delta, o.r.id === cur)}</button><button class="hide-meal" data-action="banMeal" data-id="${o.r.id}" data-slot="${k}" data-ctx="swap" title="Never suggest ${esc(o.r.name)}" aria-label="Never suggest ${esc(o.r.name)}">${ICON.eye}</button></li>`).join("") || `<li class="empty-note">No ${MEAL_NAME[k[2]].toLowerCase()} ideas left that avoid everything on your list.</li>`}</ul>
     </div>
     <div class="sheet-f">${R[cur] ? `<button class="btn ghost" data-action="open" data-slot="${k}">Back to recipe</button><span class="spacer"></span><button class="btn" data-action="skip" data-slot="${k}">Skip this meal</button>` : `<span class="spacer"></span><button class="btn" data-action="close">Cancel</button>`}</div>`);
 }
@@ -1619,7 +1672,7 @@ function renderUsage(){
 }
 
 /* ---------- bottom navigation (phones) */
-const NAV = [["home","Home","home"],["week","Week","week"],["shop","Shop","cart"],["calendar","Calendar","cal"],["usage","Used","dots"],["prices","Prices","tag"]];
+const NAV = [["home","Home","home"],["week","Week","week"],["shop","Shop","cart"],["favs","Faves","heart"],["calendar","Calendar","cal"],["usage","Used","dots"],["prices","Prices","tag"]];
 function renderBottomNav(){
   $("#bottomNav").innerHTML = NAV.map(([t, label, ic]) => `<button class="bn" data-tab="${t}" aria-current="${t === TAB ? "page" : "false"}">${ICON[ic]}<span>${label}</span>${t === "shop" && $("#shopCount").textContent ? `<i class="bn-badge">${$("#shopCount").textContent}</i>` : ""}</button>`).join("");
 }
@@ -1683,12 +1736,86 @@ function renderHome(){
           <div><span class="label">In your calendar</span><b class="num">${loggedMeals}</b><small>meals saved</small></div>
         </div>
       </section>
+      ${homeFavs()}
       <section class="panel wide">
         <div class="panel-h"><h2>Recently eaten</h2><button class="link-btn" data-action="tab" data-tab="calendar">Open calendar</button></div>
         ${recent}
       </section>
     </div>
   </div>`;
+}
+
+/* ---------- favourites */
+// How often and when each recipe was eaten, from the calendar plus past days of this week.
+function eatenStats(){
+  const out = {}, today = todayISO();
+  const add = (k, rec) => { if (!rec || !rec.m || k > today) return; for (const mm in rec.m) { const id = rec.m[mm][0]; const o = out[id] || (out[id] = {n: 0, last: ""}); o.n++; if (k > o.last) o.last = k; } };
+  for (const k in S.log) add(k, S.log[k]);
+  for (const k of planDates()) add(k, dayRecord(k));
+  return out;
+}
+function renderFavs(){
+  const all = Object.keys(S.fav).filter(id => R[id]).sort((a, b) => S.fav[b] - S.fav[a]);
+  const f = S.favFilter || "all";
+  const list = all.filter(id => f === "all" || R[id].t === f);
+  const stats = eatenStats();
+  const inPlan = {}; for (const k of activeSlots()) { const id = S.plan[k]; if (S.fav[id]) (inPlan[id] = inPlan[id] || []).push(k); }
+  const counts = {all: all.length}; for (const id of all) counts[R[id].t] = (counts[R[id].t] || 0) + 1;
+  const seg = [["all","All"],["b","Breakfast"],["l","Lunch"],["d","Dinner"]].map(([v, n]) => `<button data-action="favfilter" data-v="${v}" aria-pressed="${f === v}">${n}${counts[v] ? ` <span class="seg-n">${counts[v]}</span>` : ""}</button>`).join("");
+  if (!all.length) {
+    view.favs.innerHTML = `<div class="favs-empty">
+      <div class="fe-ico" aria-hidden="true">${ICON.heart}</div>
+      <h2>No favourites yet</h2>
+      <p>Tap the heart on any recipe to save it here. Larder will then suggest your favourites more often, and you can drop one into this week whenever you fancy it.</p>
+      <button class="btn primary" data-action="tab" data-tab="week">${ICON.week} Browse this week's meals</button>
+    </div>`;
+    return;
+  }
+  const card = id => {
+    const r = R[id], st = stats[id], ok = allowed(r), planned = inPlan[id];
+    const eaten = st ? `Eaten ${st.n === 1 ? "once" : st.n + " times"} · last on ${fmtDate(parseISO(st.last), {weekday:"short", day:"numeric", month:"short"})}` : "Not eaten yet";
+    return `<article class="fav-card">
+      <div class="fc-top"><span class="fc-type"><i class="dot ${r.t}"></i>${MEAL_NAME[r.t]}</span>${favBtn(id)}</div>
+      <button class="fc-name" data-action="logrecipe" data-r="${id}">${esc(r.name)}</button>
+      <div class="meal-meta"><span>${r.time} min</span><span aria-hidden="true">·</span><span class="num">${pence(portionCost(r))} a portion</span>${r.fv >= .5 ? `<span aria-hidden="true">·</span><span>${fiveText(r.fv)}</span>` : ""}${r.tr > 1 ? `<span class="tier t${r.tr}">${TIER[r.tr]}</span>` : ""}</div>
+      <p class="fc-eaten">${eaten}</p>
+      ${planned ? `<p class="fc-plan">${ICON.week}<span>In this week's plan: ${planned.map(k => DAYS[+k[0]].slice(0, 3)).join(", ")}</span></p>` : ""}
+      ${!ok ? `<p class="fc-warn">Hidden by your diet or avoid list, so Larder won't plan it.</p>` : ""}
+      <div class="fc-actions"><button class="btn sm" data-action="logrecipe" data-r="${id}">Recipe</button>${ok ? `<button class="btn sm primary" data-action="favadd" data-r="${id}">Add to week</button>` : ""}</div>
+    </article>`;
+  };
+  view.favs.innerHTML = `<div class="favs">
+    <div class="favs-top">
+      <div class="seg" role="group" aria-label="Show">${seg}</div>
+      <label class="switch"><input type="checkbox" id="favBoost" ${S.favBoost ? "checked" : ""}> Suggest my favourites more often</label>
+    </div>
+    ${list.length ? `<div class="fav-grid">${list.map(card).join("")}</div>` : `<div class="hm-empty"><span>No ${MEAL_NAME[f].toLowerCase()} favourites yet.</span></div>`}
+  </div>`;
+}
+function favAddModal(id){
+  const r = R[id]; if (!r) return;
+  if (!S.meals[r.t]) { toast(`Turn on ${MEAL_NAME[r.t].toLowerCase()} in the week settings first`); return; }
+  const ws = weekStart();
+  const rows = DAYS.map((d, i) => {
+    const k = i + "-" + r.t, cur = R[S.plan[k]], off = S.daysOff[i], date = fmtDate(addDays(ws, i), {day:"numeric", month:"short"});
+    if (off) return `<li><div class="pick-row off"><span class="pk-day"><b>${d}</b>${date}</span><span class="hint">Eating out</span></div></li>`;
+    if (S.plan[k] === id) return `<li><div class="pick-row same"><span class="pk-day"><b>${d}</b>${date}</span><span>Already planned</span></div></li>`;
+    return `<li><button class="pick-row" data-action="favplace" data-r="${id}" data-slot="${k}"><span class="pk-day"><b>${d}</b>${date}</span><span class="pk-cur">${cur ? "Replaces " + esc(cur.name) : "Nothing planned"}</span>${ICON.chevR}</button></li>`;
+  }).join("");
+  openModal(`<div class="sheet-h"><div style="flex:1;min-width:0">
+      <div class="eyebrow"><i class="dot ${r.t}"></i>Add to this week</div>
+      <h2 id="mTitle">${esc(r.name)}</h2>
+      <p class="hint" style="margin:6px 0 0">Pick a day for ${MEAL_NAME[r.t].toLowerCase()}. It's locked in, so shuffling won't move it.</p>
+    </div><button class="icon-btn" style="opacity:1" data-action="close" aria-label="Close">${ICON.close}</button></div>
+    <div class="sheet-b"><ul class="pick-list">${rows}</ul></div>`);
+}
+function homeFavs(){
+  const ids = Object.keys(S.fav).filter(id => R[id]).sort((a, b) => S.fav[b] - S.fav[a]).slice(0, 6);
+  if (!ids.length) return "";
+  return `<section class="panel wide">
+    <div class="panel-h"><h2>Your favourites</h2><button class="link-btn" data-action="tab" data-tab="favs">See all ${Object.keys(S.fav).length}</button></div>
+    <div class="fav-strip">${ids.map(id => `<button class="fav-chip" data-action="logrecipe" data-r="${id}"><i class="dot ${R[id].t}"></i><span>${esc(R[id].name)}</span></button>`).join("")}</div>
+  </section>`;
 }
 
 /* ---------- onboarding / name */
@@ -1811,13 +1938,13 @@ function logRecipeModal(id){
   openModal(`<div class="sheet-h"><div style="flex:1;min-width:0">
       <div class="eyebrow"><i class="dot ${r.t}"></i>${MEAL_NAME[r.t]}</div>
       <h2 id="mTitle">${esc(r.name)}</h2>
-      <div class="tags"><span class="pill neutral">${ICON.clock} ${r.time} min</span><span class="pill neutral">${TIER[r.tr]}</span>${r.fv >= .5 ? `<span class="pill good">${fiveText(r.fv)}</span>` : ""}</div>
-    </div><button class="icon-btn" style="opacity:1" data-action="close" aria-label="Close">${ICON.close}</button></div>
+      <div class="tags"><span class="pill neutral">${ICON.clock} ${r.time} min</span><span class="pill neutral">${TIER[r.tr]}</span>${r.fv >= .5 ? `<span class="pill good">${fiveText(r.fv)}</span>` : ""}<span class="pill good num">${pence(portionCost(r))} a portion</span></div>
+    </div>${favBtn(r.id)}<button class="icon-btn" style="opacity:1" data-action="close" aria-label="Close">${ICON.close}</button></div>
     <div class="sheet-b"><div class="recipe">
       <div><h3>Ingredients · serves ${S.people}</h3><ul class="ing-list">${r.ing.map(([iid, q]) => { const l = ingLine(iid, q * S.people); return `<li><span>${esc(l.name)}</span><span class="amt">${esc(l.amt)}</span></li>`; }).join("")}</ul></div>
       <div><h3>Method</h3><ol class="steps">${r.steps.map(x => `<li><span>${esc(x)}</span></li>`).join("")}</ol>${r.tip ? `<div class="tip"><b>Tip.</b> ${esc(r.tip)}</div>` : ""}</div>
     </div></div>
-    <div class="sheet-f"><span class="spacer"></span><button class="btn primary" data-action="close">Done</button></div>`);
+    <div class="sheet-f"><span class="spacer"></span><button class="btn" data-action="close">Close</button>${allowed(r) && S.meals[r.t] ? `<button class="btn primary" data-action="favadd" data-r="${r.id}">${ICON.week} Add to this week</button>` : ""}</div>`);
 }
 
 function copyFallback(text){
@@ -1869,6 +1996,7 @@ $("#budgetNum").addEventListener("input", e => setBudget(e.target.value));
 $("#budgetNum").addEventListener("blur", e => { if (!(+e.target.value >= 10)) e.target.value = S.budget; });
 $("#budgetRange").addEventListener("input", e => setBudget(e.target.value, true));
 $("#diet").addEventListener("change", e => { S.diet = e.target.value; replan(() => toast(S.diet === "any" ? "Showing all meals" : `Plan is now ${DIET_NAME[S.diet]}`)); });
+document.addEventListener("change", e => { if (e.target.id === "favBoost") { S.favBoost = e.target.checked; save(); toast(S.favBoost ? "Favourites will come up more often" : "Favourites planned like any other meal"); } });
 $("#pantry").addEventListener("change", e => { S.pantry = e.target.checked; save(); render(); });
 
 const tipEl = $("#vizTip");
@@ -1997,6 +2125,26 @@ document.addEventListener("click", e => {
     }
     case "prefs": prefsModal(); break;
     case "rename": nameModal(false); break;
+    case "fav": {
+      const rid = b.dataset.r, on = !S.fav[rid];
+      if (on) S.fav[rid] = Date.now(); else delete S.fav[rid];
+      save();
+      // update every heart for this recipe in place (modal included), then refresh the views behind
+      document.querySelectorAll(`[data-action="fav"][data-r="${rid}"]`).forEach(x => { x.setAttribute("aria-pressed", on); x.innerHTML = on ? ICON.heartFill : ICON.heart; const lbl = on ? "Remove from favourites" : "Add to favourites"; x.title = lbl; x.setAttribute("aria-label", lbl); });
+      const modalOpen = !$("#modal").hidden;
+      render();
+      if (modalOpen) { const mb = $("#sheet").querySelector(`[data-action="fav"][data-r="${rid}"]`); mb && mb.focus(); }
+      toast(on ? `${R[rid].name} added to favourites` : `Removed from favourites`, on ? null : () => { S.fav[rid] = Date.now(); save(); render(); });
+      break;
+    }
+    case "favfilter": S.favFilter = b.dataset.v; save(); renderFavs(); break;
+    case "favadd": favAddModal(b.dataset.r); break;
+    case "favplace": {
+      const snap = snapshot(), rid = b.dataset.r;
+      S.plan[k] = rid; S.locks[k] = 1; changed = new Set([k]); save(); closeModal(); render();
+      toast(`${R[rid].name} added for ${DAYS[+k[0]]}`, () => restore(snap));
+      break;
+    }
     case "calday": dayModal(b.dataset.date); break;
     case "logrecipe": logRecipeModal(b.dataset.r); break;
     case "logremove": {
@@ -2014,7 +2162,7 @@ document.addEventListener("click", e => {
     case "unlockall": S.locks = {}; save(); render(); toast("All meals unlocked"); break;
     case "close": closeModal(); break;
     case "clearprefs": { const snap = snapshot(); S.banIng = {}; S.banMeal = {}; generate({keepAll: true}); render(); prefsModal(true); toast("Avoid list cleared", () => restore(snap)); break; }
-    case "tab": if (!$("#modal").hidden) closeModal(); setTab(b.dataset.tab); window.scrollTo({top: TAB === "home" || TAB === "calendar" ? 0 : $(".tabbar").offsetTop - 70, behavior: "smooth"}); break;
+    case "tab": if (!$("#modal").hidden) closeModal(); setTab(b.dataset.tab); window.scrollTo({top: TAB === "home" || TAB === "calendar" || TAB === "favs" ? 0 : $(".tabbar").offsetTop - 70, behavior: "smooth"}); break;
     case "have": S.have[id] = 1; delete S.ticked[id]; save(); render(); toast(`${ING[id].n} taken off the bill`, () => { delete S.have[id]; save(); render(); }); break;
     case "need": delete S.have[id]; save(); render(); break;
     case "untick": S.ticked = {}; save(); renderShop(); break;
