@@ -480,6 +480,14 @@ button.cd:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}
 .cd-out{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--warn)}
 .cal-foot{display:flex;gap:10px;align-items:flex-start;padding:12px 16px;font-size:13px;color:var(--muted)}
 .cal-foot svg{flex:none;margin-top:1px}
+/* Week switcher */
+.weekbar{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:8px 10px;position:relative}
+.wb-mid{display:flex;flex-direction:column;align-items:center;line-height:1.25;min-width:0}
+.wb-mid b{font-family:var(--f-display);font-weight:800;font-size:18px;letter-spacing:-.01em}
+.wb-mid span{font-size:13px;color:var(--muted)}
+.wb-arrow{width:40px;height:40px;border:1px solid var(--line)}
+.wb-arrow:disabled{opacity:.3!important;cursor:not-allowed;background:transparent}
+.wb-side{position:absolute;right:62px;top:50%;transform:translateY(-50%)}
 /* Favourites */
 .fav-btn[aria-pressed=true],.icon-btn.fav-btn[aria-pressed=true]{color:var(--bad);background:var(--bad-soft)}
 .fav-btn[aria-pressed=false]{background:transparent}
@@ -595,6 +603,8 @@ div.pick-row.same{background:var(--brand-soft);border-color:transparent;color:va
   .prices td:first-child{line-height:1.35}
   .prices tr.group td{padding-top:10px}
   #planChrome{gap:14px}
+  .wb-side{position:static;transform:none;grid-column:1/-1;justify-self:center}
+  .wb-side:has(.link-btn){display:none}
   .tabbar:has(.tab-actions:empty){display:none}
   main{padding-bottom:calc(92px + env(safe-area-inset-bottom,0px))}
   .bottomnav{display:grid;grid-template-columns:repeat(7,1fr);position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--surface);border-top:1px solid var(--line);padding:6px max(4px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(4px,env(safe-area-inset-left,0px));box-shadow:0 -4px 18px rgba(0,0,0,.05)}
@@ -664,6 +674,7 @@ div.pick-row.same{background:var(--brand-soft);border-color:transparent;color:va
     <div class="tab-actions" id="tabActions"></div>
   <section id="view-home" role="tabpanel" aria-labelledby="tab-home" hidden></section>
   <div id="planChrome">
+  <div class="weekbar" id="weekBar" aria-label="Choose week"></div>
   <section class="settings" aria-label="Plan settings">
     <div class="field f-budget">
       <label class="label" for="budgetNum">Weekly budget</label>
@@ -1046,7 +1057,7 @@ const DIET_NAME = {any:"",nopork:"no pork",pesc:"pescatarian",veg:"vegetarian"};
 
 /* ------------------------------------------------------------------ state */
 const KEY = "larder.v1";
-const DEFAULTS = {budget:40,people:2,meals:{b:true,l:true,d:true},diet:"any",pantry:true,prices:{},have:{},ticked:{},plan:{},locks:{},banIng:{},banMeal:{},daysOff:{},usageSort:"aisle",name:"",planWeek:"",log:{},weeks:{},fav:{},favBoost:true,favFilter:"all"};
+const DEFAULTS = {budget:40,people:2,meals:{b:true,l:true,d:true},diet:"any",pantry:true,prices:{},have:{},ticked:{},plan:{},locks:{},banIng:{},banMeal:{},daysOff:{},usageSort:"aisle",name:"",planWeek:"",log:{},weeks:{},fav:{},favBoost:true,favFilter:"all",plans:{}};
 let S = load();
 function load(){
   let s = null;
@@ -1057,7 +1068,7 @@ function load(){
   out.meals = Object.assign({b:true,l:true,d:true}, s.meals || {});
   for (const k in out.plan) if (out.plan[k] !== "skip" && !R[out.plan[k]]) delete out.plan[k];
   for (const k in out.prices) if (!ING[k]) delete out.prices[k];
-  out.banIng = out.banIng || {}; out.banMeal = out.banMeal || {}; out.daysOff = out.daysOff || {}; out.log = out.log || {}; out.fav = out.fav || {}; for (const k in out.fav) if (!R[k]) delete out.fav[k]; if (typeof out.favBoost !== "boolean") out.favBoost = true; out.weeks = out.weeks || {}; out.name = typeof out.name === "string" ? out.name : "";
+  out.banIng = out.banIng || {}; out.banMeal = out.banMeal || {}; out.daysOff = out.daysOff || {}; out.log = out.log || {}; out.plans = out.plans || {}; out.fav = out.fav || {}; for (const k in out.fav) if (!R[k]) delete out.fav[k]; if (typeof out.favBoost !== "boolean") out.favBoost = true; out.weeks = out.weeks || {}; out.name = typeof out.name === "string" ? out.name : "";
   return out;
 }
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
@@ -1099,38 +1110,85 @@ const iso = d => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0
 const parseISO = k => { const [y, m, d] = k.split("-").map(Number); return new Date(y, m - 1, d); };
 const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
 const todayISO = () => iso(new Date());
-// The week a new plan is for: this Monday, or next Monday from Friday onwards (planning ahead for the weekend shop).
+// Monday of the week that contains today. A week only counts as finished once its Sunday has passed.
 function currentWeekStart(){
   const d = new Date(); d.setHours(0,0,0,0);
-  const dow = (d.getDay() + 6) % 7; // Monday = 0
-  if (dow >= 4) d.setDate(d.getDate() + (7 - dow)); else d.setDate(d.getDate() - dow);
+  d.setDate(d.getDate() - (d.getDay() + 6) % 7);
   return d;
 }
+const mondayOf = d => { const x = new Date(d); x.setHours(0,0,0,0); x.setDate(x.getDate() - (x.getDay() + 6) % 7); return x; };
 const weekStart = () => S.planWeek ? parseISO(S.planWeek) : currentWeekStart();
 const planDates = () => [0,1,2,3,4,5,6].map(d => iso(addDays(weekStart(), d)));
-// One day's meals: from the live plan for this week's dates, otherwise from the saved calendar.
+const MAX_AHEAD = 4; // weeks you can plan ahead
+// Each week has its own plan. The week being viewed lives in S.plan etc; other weeks wait in S.plans.
+const PLAN_KEYS = ["plan","locks","daysOff","ticked","have"];
+const takeStore = () => Object.fromEntries(PLAN_KEYS.map(k => [k, S[k]]));
+const putStore = st => { for (const k of PLAN_KEYS) S[k] = (st && st[k]) || {}; };
+function recFrom(plan, daysOff, idx){
+  if (daysOff[idx]) return {out: 1, p: S.people};
+  const m = {};
+  for (const [mm] of MEALS) if (S.meals[mm]) { const id = plan[idx + "-" + mm]; if (R[id]) m[mm] = [id, R[id].name]; }
+  return Object.keys(m).length ? {m, p: S.people} : null;
+}
+// One day's meals: from the week on screen, another planned week, or the saved calendar.
 function dayRecord(key){
   const idx = planDates().indexOf(key);
-  if (idx >= 0) {
-    if (S.daysOff[idx]) return {out: 1, cur: 1, d: idx, p: S.people};
-    const m = {};
-    for (const [mm] of MEALS) if (S.meals[mm]) { const id = S.plan[idx + "-" + mm]; if (R[id]) m[mm] = [id, R[id].name]; }
-    return Object.keys(m).length ? {m, cur: 1, d: idx, p: S.people} : null;
-  }
+  if (idx >= 0) { const r = recFrom(S.plan, S.daysOff, idx); return r ? Object.assign(r, {cur: 1, d: idx}) : null; }
+  const wk = iso(mondayOf(parseISO(key))), st = S.plans[wk];
+  if (st) { const i = Math.round((parseISO(key) - parseISO(wk)) / 864e5); const r = recFrom(st.plan || {}, st.daysOff || {}, i); return r ? Object.assign(r, {ahead: 1, wk}) : null; }
   return S.log[key] || null;
 }
-// When a new week starts, save last week's plan to the calendar and start a fresh plan.
+// Save a finished week to the calendar.
+function archiveWeek(wk, store){
+  const keep = takeStore(), keepWk = S.planWeek;
+  putStore(store); S.planWeek = wk;
+  const e = evaluate(S.plan);
+  if (activeSlots().some(k => R[S.plan[k]])) S.weeks[wk] = {cost: Math.round(e.cost * 100) / 100, budget: S.budget, people: S.people};
+  planDates().forEach((k, i) => { const r = recFrom(S.plan, S.daysOff, i); if (r) S.log[k] = r; });
+  putStore(keep); S.planWeek = keepWk;
+}
+// Bring a week back from the calendar into a live plan (used to repair weeks saved too early).
+function restoreFromLog(wk){
+  let any = false;
+  for (let d = 0; d < 7; d++) {
+    const k = iso(addDays(parseISO(wk), d)), rec = S.log[k];
+    if (!rec) continue;
+    any = true;
+    if (rec.out) S.daysOff[d] = 1;
+    else for (const mm in rec.m || {}) if (R[rec.m[mm][0]]) S.plan[d + "-" + mm] = rec.m[mm][0];
+    delete S.log[k];
+  }
+  if (any) delete S.weeks[wk];
+  return any;
+}
+// On opening: save any finished weeks to the calendar and show the current week.
 function rollover(){
   const cur = iso(currentWeekStart());
-  if (!S.planWeek) { S.planWeek = cur; return false; }
-  if (S.planWeek >= cur) return false;
-  const e = evaluate(S.plan);
-  S.weeks[S.planWeek] = {cost: Math.round(e.cost * 100) / 100, budget: S.budget, people: S.people};
-  for (const k of planDates()) { const r = dayRecord(k); if (r) { const {cur: _c, d: _d, ...rest} = r; S.log[k] = rest; } }
-  S.plan = {}; S.locks = {}; S.ticked = {}; S.have = {}; S.daysOff = {};
-  S.planWeek = cur;
-  return true;
+  S.plans = S.plans || {};
+  let rolled = false;
+  if (!S.planWeek) S.planWeek = cur;
+  for (const wk of Object.keys(S.plans)) if (wk < cur) { archiveWeek(wk, S.plans[wk]); delete S.plans[wk]; rolled = true; }
+  if (S.planWeek < cur) { archiveWeek(S.planWeek, takeStore()); rolled = true; }
+  else if (S.planWeek > cur) S.plans[S.planWeek] = takeStore();
+  if (S.planWeek !== cur) { putStore(S.plans[cur]); delete S.plans[cur]; S.planWeek = cur; }
+  if (!activeSlots().some(k => R[S.plan[k]])) restoreFromLog(cur);
+  return rolled;
 }
+// Move between weeks on the Week tab.
+function switchWeek(target){
+  if (target === S.planWeek) return;
+  S.plans[S.planWeek] = takeStore();
+  putStore(S.plans[target]); delete S.plans[target];
+  S.planWeek = target;
+  changed = new Set();
+  if (!activeSlots().some(k => R[S.plan[k]])) replan(null, {keepAll: true});
+  else { if (activeSlots().some(k => !S.plan[k])) generate({keepAll: true}); save(); render(); }
+}
+function weekName(wk){
+  const n = Math.round((parseISO(wk) - currentWeekStart()) / (7 * 864e5));
+  return n === 0 ? "This week" : n === 1 ? "Next week" : n === -1 ? "Last week" : n > 1 ? `In ${n} weeks` : `${-n} weeks ago`;
+}
+const weekRange = wk => { const a = parseISO(wk), b = addDays(a, 6); return a.getMonth() === b.getMonth() ? `${a.getDate()}–${fmtDate(b, {day:"numeric", month:"short"})}` : `${fmtDate(a, {day:"numeric", month:"short"})} – ${fmtDate(b, {day:"numeric", month:"short"})}`; };
 const fmtDate = (d, o) => d.toLocaleDateString("en-GB", o);
 const dietOK = r => S.diet === "any" ? true : S.diet === "veg" ? !r.hasMeat && !r.hasFish : S.diet === "pesc" ? !r.hasMeat : !r.hasPork;
 const allowed = r => dietOK(r) && !S.banMeal[r.id] && !r.ing.some(([id]) => S.banIng[id]);
@@ -1323,6 +1381,13 @@ function renderControls(){
   $("#mealChips").innerHTML = MEALS.map(([m, n]) => `<button type="button" class="chip" data-action="meal" data-m="${m}" aria-pressed="${!!S.meals[m]}"><span class="tick"></span>${n}</button>`).join("");
   const locked = Object.keys(S.locks).filter(k => S.locks[k] && activeSlots().includes(k)).length;
   $("#lockHint").textContent = locked ? `${locked} locked ${locked === 1 ? "meal stays" : "meals stay"} put when you shuffle.` : "";
+  const cw = iso(currentWeekStart()), maxW = iso(addDays(currentWeekStart(), 7 * MAX_AHEAD));
+  const atStart = S.planWeek <= cw, atEnd = S.planWeek >= maxW;
+  $("#weekBar").innerHTML = `
+    <button class="icon-btn wb-arrow" style="opacity:1" data-action="week" data-d="-1" ${atStart ? "disabled" : ""} aria-label="Previous week" title="${atStart ? "Past weeks are in your calendar" : "Previous week"}">${ICON.chevL}</button>
+    <div class="wb-mid"><b>${weekName(S.planWeek)}</b><span>${weekRange(S.planWeek)}</span></div>
+    <button class="icon-btn wb-arrow" style="opacity:1" data-action="week" data-d="1" ${atEnd ? "disabled" : ""} aria-label="Next week" title="${atEnd ? `You can plan up to ${MAX_AHEAD} weeks ahead` : "Next week"}">${ICON.chevR}</button>
+    <span class="wb-side">${S.planWeek !== cw ? `<button class="btn sm" data-action="week" data-d="0">Back to this week</button>` : `<button class="link-btn" data-action="tab" data-tab="calendar">Past weeks</button>`}</span>`;
   const nI = Object.keys(S.banIng).length, nM = Object.keys(S.banMeal).length;
   $("#prefsBtn").innerHTML = `${ICON.ban} Foods I avoid${nI + nM ? ` <span class="count">${nI + nM}</span>` : ""}`;
   $("#prefsBtn").title = nI + nM ? `${nI} ingredient${nI === 1 ? "" : "s"}, ${nM} meal${nM === 1 ? "" : "s"} hidden` : "Pick ingredients or meals you never want suggested";
@@ -1924,14 +1989,14 @@ function dayModal(k){
     : `<ul class="hm-list">${MEALS.filter(([m]) => r.m[m]).map(([m]) => {
         const [id, nm] = r.m[m];
         const row = mealRow(r.cur ? r.d + "-" + m : null, m, id, nm);
-        return r.cur ? row : row.replace("</li>", `<button class="link-btn" data-action="logremove" data-date="${k}" data-m="${m}" aria-label="Remove ${esc(nm)} from ${esc(fmtDate(d, {weekday:"long"}))}">Remove</button></li>`);
+        return r.cur || r.ahead ? row : row.replace("</li>", `<button class="link-btn" data-action="logremove" data-date="${k}" data-m="${m}" aria-label="Remove ${esc(nm)} from ${esc(fmtDate(d, {weekday:"long"}))}">Remove</button></li>`);
       }).join("")}</ul>`;
   openModal(`<div class="sheet-h"><div style="flex:1;min-width:0">
-      <div class="eyebrow">${future ? "Planned" : r.cur ? "This week" : "Eaten"}${r.p ? ` · for ${r.p === 1 ? "1 person" : r.p + " people"}` : ""}</div>
+      <div class="eyebrow">${future || r.ahead ? "Planned" : r.cur ? "This week" : "Eaten"}${r.p ? ` · for ${r.p === 1 ? "1 person" : r.p + " people"}` : ""}</div>
       <h2 id="mTitle">${fmtDate(d, {weekday:"long", day:"numeric", month:"long"})}</h2>
     </div><button class="icon-btn" style="opacity:1" data-action="close" aria-label="Close">${ICON.close}</button></div>
     <div class="sheet-b">${rows}${r.cur ? `<p class="hint" style="margin:14px 0 0">This day is in your current plan. Open a meal to swap or skip it.</p>` : ""}</div>
-    <div class="sheet-f"><span class="spacer"></span>${r.cur ? `<button class="btn" data-action="tab" data-tab="week">Open week plan</button>` : ""}<button class="btn primary" data-action="close">Done</button></div>`);
+    <div class="sheet-f"><span class="spacer"></span>${r.cur ? `<button class="btn" data-action="tab" data-tab="week">Open week plan</button>` : r.ahead ? `<button class="btn" data-action="openweek" data-wk="${r.wk}">Open that week</button>` : ""}<button class="btn primary" data-action="close">Done</button></div>`);
 }
 function logRecipeModal(id){
   const r = R[id]; if (!r) return;
@@ -2125,6 +2190,14 @@ document.addEventListener("click", e => {
     }
     case "prefs": prefsModal(); break;
     case "rename": nameModal(false); break;
+    case "week": {
+      const dd = +b.dataset.d, cw = currentWeekStart();
+      const target = dd === 0 ? iso(cw) : iso(addDays(weekStart(), 7 * dd));
+      if (target < iso(cw) || target > iso(addDays(cw, 7 * MAX_AHEAD))) break;
+      switchWeek(target);
+      toast(`${weekName(target)} · ${weekRange(target)}`);
+      break;
+    }
     case "fav": {
       const rid = b.dataset.r, on = !S.fav[rid];
       if (on) S.fav[rid] = Date.now(); else delete S.fav[rid];
@@ -2146,6 +2219,7 @@ document.addEventListener("click", e => {
       break;
     }
     case "calday": dayModal(b.dataset.date); break;
+    case "openweek": closeModal(); switchWeek(b.dataset.wk); setTab("week"); window.scrollTo(0, 0); break;
     case "logrecipe": logRecipeModal(b.dataset.r); break;
     case "logremove": {
       const k2 = b.dataset.date, mm = b.dataset.m, rec = S.log[k2];
@@ -2207,7 +2281,7 @@ render();
 if (!S.name) nameModal(true);
 else if (rolled) toast(`New week, ${S.name}. Last week is saved in your calendar.`);
 save();
-window.__larder = {get S(){return S}, evaluate, generate, R, ING, allowed, rollover, render};
+window.__larder = {get S(){return S}, evaluate, generate, R, ING, allowed, rollover, render, switchWeek};
 })();
 </script>
 
